@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rapider Real Estate Investment Analysis</title>
+  <script src="https://kit.fontawesome.com/5b23df26dc.js" crossorigin="anonymous" defer></script>
+  <script src="/assets/js/rapider-components.js" defer></script>
+  <link rel="stylesheet" href="/assets/themes/rapider-tailwind-theme.css">
+  <link rel="stylesheet" href="/assets/themes/crm-expenses-design.css">
+  <style>
+    body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; }
+    iframe#appFrame { width: 100%; height: 100%; border: none; }
+  </style>
+</head>
+<body>
+  <iframe id="appFrame" src="pages/deal-pipeline/deal-pipeline.html"></iframe>
+  <script>
+    const routes = {
+  "deal-pipeline": "pages/deal-pipeline/deal-pipeline.html",
+  "deals-register": "pages/deals-register/deals-register.html",
+  "market-comps-library": "pages/market-comps-library/market-comps-library.html",
+  "underwriting-proforma": "pages/underwriting-proforma/underwriting-proforma.html",
+  "debt-capital-stack": "pages/debt-capital-stack/debt-capital-stack.html",
+  "equity-waterfalls": "pages/equity-waterfalls/equity-waterfalls.html",
+  "due-diligence-room": "pages/due-diligence-room/due-diligence-room.html",
+  "ic-memos-approvals": "pages/ic-memos-approvals/ic-memos-approvals.html",
+  "actual-vs-underwriting": "pages/actual-vs-underwriting/actual-vs-underwriting.html",
+  "deal-detail": "pages/deal-detail/deal-detail.html",
+  "underwriting-model-detail": "pages/underwriting-model-detail/underwriting-model-detail.html",
+  "deal-comp-ic-drawer": "pages/deal-comp-ic-drawer/deal-comp-ic-drawer.html"
+};
+    function handleHash() {
+      const hash = window.location.hash.replace(/^#\/?/, '').split('?')[0];
+      const route = hash || 'deal-pipeline';
+      const target = routes[route] || routes['deal-pipeline'];
+      const iframe = document.getElementById('appFrame');
+      if (iframe) iframe.src = target;
+    }
+    window.addEventListener('hashchange', handleHash);
+    window.addEventListener('load', handleHash);
+  </script>
+</body>
+</html>
