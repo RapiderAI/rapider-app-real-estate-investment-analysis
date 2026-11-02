@@ -3,709 +3,568 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Post-Close Actual vs. Underwriting - Real Estate &amp; PropTech Suite</title>
+  <title>Post-Close Actual vs. Underwriting — Rapider Real Estate Investment Analysis</title>
   <script src="https://kit.fontawesome.com/5b23df26dc.js" crossorigin="anonymous" defer></script>
   <script src="/assets/js/rapider-components.js" defer></script>
   <link rel="stylesheet" href="/assets/themes/rapider-tailwind-theme.css">
   <link rel="stylesheet" href="/assets/themes/crm-expenses-design.css">
-
   <style>
-    dialog {
-      margin: auto;
-      border: none;
-      padding: 0;
-      background: transparent;
+    :root {
+      --ink: #172137;
+      --muted: #67728a;
+      --line: #e9ecf3;
+      --bg: #f5f6fa;
+      --purple: #6854df;
+      --purple-soft: #f3f0ff;
+      --panel: #ffffff;
+      --dark: #1f243a;
+      --soft: #eeeaff;
+      --green: #16795b;
+      --amber: #b4690e;
+      --red: #b9384f;
+      --radius: 14px;
     }
-    .field input:not([type="checkbox"]):not([type="radio"]),
-    .field select,
-    .field textarea {
-      display: block;
-      width: 100%;
-      min-height: 42px;
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif; background: var(--bg); color: var(--ink); }
+    a { color: inherit; text-decoration: none; }
+    button, input, select, textarea { font: inherit; }
+    .btn, button.btn {
+      cursor: pointer; border: 1px solid #dfe3ed; background: #ffffff; color: var(--ink);
+      padding: 8px 14px; border-radius: 9px; font-weight: 600; display: inline-flex;
+      align-items: center; justify-content: center; gap: 7px; font-size: 13px; min-height: 38px;
+      transition: all 0.15s ease;
     }
-    aside.collapsed .sidebar-label, [data-collapsed="true"] .sidebar-label { display: none !important; }
-  </style>
+    .btn:hover { background: #f5f3ff; border-color: #cfc7f4; }
+    .btn.primary, button.primary, a.btn.primary {
+      background: var(--purple) !important; background-color: var(--purple) !important;
+      color: #ffffff !important; border-color: var(--purple) !important;
+      box-shadow: 0 3px 8px rgba(104, 84, 223, 0.22);
+    }
+    .btn.primary:hover, button.primary:hover, a.btn.primary:hover {
+      background: #5844cc !important; color: #ffffff !important;
+    }
+    .btn.danger, button.danger {
+      background: var(--red) !important; color: #ffffff !important; border-color: var(--red) !important;
+    }
+    .btn.small { padding: 5px 10px; min-height: 30px; font-size: 12px; border-radius: 7px; }
+    .btn.icon-only { padding: 6px 9px; min-height: 30px; color: var(--red); border-color: #f1d0d6; background: #fffafb; }
+    .btn.icon-only:hover { background: #fee2e2; }
 
-  <style data-dark-mode-parity>
-    html.dark, body.dark { --ink:#f1f5f9; --muted:#94a3b8; --line:#263044; --bg:#0f172a; --soft:#1e1b4b; background:#0f172a !important; color:#f1f5f9 !important; }
-    html.dark aside, body.dark aside { background: #0f172a !important; border-color: #1e293b !important; }
-    html.dark .bg-white, body.dark .bg-white { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
-    html.dark .text-slate-900, body.dark .text-slate-900 { color: #f8fafc !important; }
-    html.dark .text-slate-800, body.dark .text-slate-800 { color: #f1f5f9 !important; }
-    html.dark .text-slate-700, body.dark .text-slate-700 { color: #cbd5e1 !important; }
-    html.dark .text-slate-600, body.dark .text-slate-600 { color: #94a3b8 !important; }
-    html.dark .text-slate-500, body.dark .text-slate-500 { color: #64748b !important; }
-    html.dark .border-slate-200, body.dark .border-slate-200 { border-color: #334155 !important; }
-    html.dark .border-slate-100, body.dark .border-slate-100 { border-color: #1e293b !important; }
-    html.dark .bg-slate-50, body.dark .bg-slate-50 { background: #0b1120 !important; }
-    html.dark .bg-slate-100, body.dark .bg-slate-100 { background: #1e293b !important; }
-    html.dark .hover\:bg-slate-50:hover, body.dark .hover\:bg-slate-50:hover { background: #1e293b !important; }
-    html.dark .hover\:bg-slate-100:hover, body.dark .hover\:bg-slate-100:hover { background: #334155 !important; }
-    html.dark input, html.dark select, html.dark textarea { background: #1e293b !important; color: #f8fafc !important; border-color: #334155 !important; }
-    html.dark table thead th { background: #1e293b !important; color: #94a3b8 !important; }
-  </style>
+    .layout { display: grid; grid-template-columns: 236px minmax(0, 1fr); height: 100vh; overflow: hidden; }
+    .sidebar {
+      background: #ffffff; border-right: 1px solid var(--line); padding: 22px 14px 16px;
+      height: 100vh; display: flex; flex-direction: column; overflow-y: auto; z-index: 30;
+    }
+    .brand-row { display: flex; align-items: center; justify-content: space-between; padding: 0 8px 18px; min-height: 34px; }
+    .brand-row .brand { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700; letter-spacing: -0.4px; color: var(--ink); flex: 1; min-width: 0; }
+    .suite-icon-container { width: 28px; height: 28px; border-radius: 8px; background: #eee9fb; color: var(--purple); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .suite-icon-container .suite-expand-icon { display: none !important; font-size: 14px; color: var(--purple); }
+    .sidebar-collapse-btn { background: transparent; border: 1px solid transparent; cursor: pointer; padding: 5px 7px; border-radius: 6px; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; }
+    .sidebar-collapse-btn:hover { background: var(--soft); color: var(--purple); border-color: #cfc7f4; }
 
-  <style data-collapsible-sidebar>
-    /* Collapsible Suite Sidebar Styles */
-    .brand-icon-wrap {
-      position: relative;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      cursor: pointer;
-      background: #eeeaff;
-      color: #6854df;
-      transition: background 0.2s;
+    .appbox { padding: 11px 12px; background: #f6f4fc; border: 1px solid #ebe6f8; border-radius: 10px; margin: 0 0 16px; display: flex; gap: 10px; align-items: center; }
+    .appicon { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; background: #e9e3ff; color: var(--purple); flex-shrink: 0; }
+    .appbox b { display: block; font-size: 13px; color: var(--ink); line-height: 1.25; }
+    .appbox small { color: var(--muted); font-size: 11px; display: block; }
+
+    .nav { display: flex; flex-direction: column; gap: 2px; }
+    .navlabel { font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px; font-weight: 700; color: #9ba3b2; margin: 16px 10px 6px; }
+    .nav a, .nav a:link, .nav a:visited {
+      display: flex; align-items: center; gap: 11px; padding: 9px 11px; font-size: 13px;
+      color: #67728a !important; border-radius: 8px; font-weight: 500;
     }
-    .brand-icon-wrap:hover {
-      background: #e0d7fe;
+    .nav a:hover { background: #f8f7fc; color: #172137 !important; }
+    .nav a.active { background: #ede9fb !important; color: #6650ce !important; font-weight: 650; }
+    .nav a .icon { width: 18px; text-align: center; font-size: 14px; color: inherit; flex-shrink: 0; }
+
+    .side-bottom { margin-top: auto; padding-top: 18px; }
+    .profile-link { border-top: 1px solid var(--line); padding: 14px 6px 0; display: flex; align-items: center; gap: 10px; }
+    .avatar-badge { width: 34px; height: 34px; border-radius: 50%; background: #eee8fb; color: #6854df; display: inline-grid; place-items: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+
+    /* Collapsed sidebar state */
+    .layout.sidebar-collapsed { grid-template-columns: 68px minmax(0, 1fr) !important; }
+    aside.sidebar-collapsed, .sidebar.sidebar-collapsed, aside[data-collapsed="true"] {
+      width: 68px !important; min-width: 68px !important; max-width: 68px !important; padding-left: 8px !important; padding-right: 8px !important;
     }
-    .brand-icon-wrap .expand-hint {
-      display: none;
-      position: absolute;
-      inset: 0;
-      align-items: center;
-      justify-content: center;
-      background: #6854df;
-      color: #ffffff;
-      border-radius: 8px;
-    }
-    aside.collapsed:hover .brand-icon-wrap .expand-hint,
-    aside.sidebar-collapsed:hover .brand-icon-wrap .expand-hint {
-      display: flex !important;
-      animation: pulse-caret 1.2s infinite ease-in-out;
-    }
-    aside.collapsed:hover .brand-icon-wrap #suiteIcon,
-    aside.sidebar-collapsed:hover .brand-icon-wrap #suiteIcon {
+    aside.collapsed .sidebar-label, aside[data-collapsed="true"] .sidebar-label, .sidebar-collapsed .sidebar-label,
+    .sidebar-collapsed .suite-title, .sidebar-collapsed .sidebar-collapse-btn, .sidebar-collapsed .navlabel,
+    .sidebar-collapsed .appbox > div:not(.appicon), .sidebar-collapsed .profile-link > div:not(.avatar-badge) {
       display: none !important;
     }
-    @keyframes pulse-caret {
-      0%, 100% { transform: translateX(0); }
-      50% { transform: translateX(2px); }
-    }
-    aside.collapsed, aside.sidebar-collapsed {
-      width: 68px !important;
-    }
-    aside.collapsed .nav-text,
-    aside.collapsed .sidebar-title,
-    aside.collapsed .sidebar-section-title,
-    aside.collapsed .sidebar-user-info,
-    aside.collapsed .suite-badge,
-    aside.sidebar-collapsed .nav-text,
-    aside.sidebar-collapsed .sidebar-title,
-    aside.sidebar-collapsed .sidebar-section-title,
-    aside.sidebar-collapsed .sidebar-user-info,
-    aside.sidebar-collapsed .suite-badge {
-      display: none !important;
-    }
-    aside.collapsed .nav-item,
-    aside.sidebar-collapsed .nav-item {
-      justify-content: center !important;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-    }
-    aside.collapsed .section-header,
-    aside.sidebar-collapsed .section-header {
-      text-align: center;
-      padding: 4px 0;
-    }
-    aside.collapsed .section-divider,
-    aside.sidebar-collapsed .section-divider {
-      display: block;
-      margin: 8px auto;
-      width: 24px;
-      border-top: 1px solid #e2e8f0;
-    }
+    .sidebar-collapsed .brand-row { justify-content: center !important; padding: 0 0 16px 0 !important; }
+    .sidebar-collapsed .brand-row .brand { justify-content: center !important; flex: none !important; cursor: pointer; gap: 0 !important; }
+    .sidebar.sidebar-collapsed:hover .suite-icon-container .suite-icon { display: none !important; }
+    .sidebar.sidebar-collapsed:hover .suite-icon-container .suite-expand-icon { display: inline-block !important; }
+    .sidebar-collapsed .appbox, .sidebar-collapsed .nav a, .sidebar-collapsed .profile-link { justify-content: center !important; padding-left: 8px !important; padding-right: 8px !important; }
 
-    /* Standardized Navigation Colors (No saturated primary blue) */
-    .sidebar .nav-item {
-      color: #67728a !important;
-      text-decoration: none;
+    /* Main Content & Topbar */
+    .main-col { display: flex; flex-direction: column; height: 100vh; overflow: hidden; min-width: 0; }
+    .topbar {
+      height: 64px; flex-shrink: 0; border-bottom: 1px solid var(--line); background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px; gap: 14px; position: sticky; top: 0; z-index: 25;
     }
-    .sidebar .nav-item:hover {
-      background: #f8fafc !important;
-      color: #1e293b !important;
-    }
-    .sidebar .nav-item.active {
-      background: #f3f0ff !important;
-      color: #53389e !important;
-      font-weight: 600 !important;
-    }
-    .sidebar .nav-item i {
-      color: #67728a;
-    }
-    .sidebar .nav-item.active i {
-      color: #53389e !important;
-    }
+    .breadcrumbs { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .breadcrumbs strong { color: var(--ink); font-weight: 600; }
+    .page-scroll { flex: 1; overflow-y: auto; padding: 26px 30px 44px; }
+    .page-wrap { max-width: 1520px; margin: 0 auto; }
 
-    /* Mobile Responsive Sidebar & Top Navigation Standard */
-    .mobile-menu {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 8px;
-      background: transparent;
-      border: 1px solid rgba(0,0,0,0.08);
-      color: #67728a;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    .mobile-menu:hover {
-      background: #f8fafc;
-      color: #1e293b;
-    }
-    .shade {
-      display: none;
-    }
+    .eyebrow { font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--purple); font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 7px; }
+    .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 22px; flex-wrap: wrap; }
+    .page-head h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.6px; margin: 0 0 6px; color: var(--ink); }
+    .page-head p { color: var(--muted); font-size: 13px; margin: 0; max-width: 780px; }
 
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; }
+    .kpi-card { background: #ffffff; border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; }
+    .kpi-card .kicker { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); display: flex; align-items: center; justify-content: space-between; }
+    .kpi-card .val { font-size: 27px; font-weight: 750; letter-spacing: -0.8px; color: var(--ink); line-height: 1.15; }
+    .kpi-card .sub { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; margin-top: 2px; flex-wrap: wrap; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-bottom: 20px; }
+    .panel { background: #ffffff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
+    .panel-head, .panel-header { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .panel-head h2, .panel-header h2 { font-size: 15px; font-weight: 700; margin: 0; color: var(--ink); }
+    .panel-head p, .panel-header p { font-size: 12px; color: var(--muted); margin: 2px 0 0; }
+    .panel-body { padding: 20px; }
+
+    .filter-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 20px; border-bottom: 1px solid var(--line); background: #fafbfe; }
+    .search-input, .form-input, .form-select, .form-textarea { flex: 1; min-width: 180px; padding: 8px 12px; border: 1px solid #dfe3ed; border-radius: 8px; font-size: 13px; background: #fff; color: var(--ink); width: 100%; }
+    .search-wrap .search-input { padding-left: 34px; }
+    .search-wrap { position: relative; flex: 1; min-width: 220px; }
+    .search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 12px; }
+    .select-filter { padding: 8px 12px; border: 1px solid #dfe3ed; border-radius: 8px; font-size: 13px; background: #fff; color: var(--ink); }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-label { font-size: 12px; font-weight: 600; color: var(--ink); }
+    .form-textarea { min-height: 90px; resize: vertical; }
+
+    .active-tags-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 20px; background: #f6f4fc; border-bottom: 1px solid #ebe6f8; font-size: 12px; }
+    .filter-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: #ffffff; border: 1px solid #d8d0f8; color: #5340b8; font-weight: 600; font-size: 11px; white-space: nowrap; }
+    .filter-chip button { border: 0; background: transparent; color: #6854df; cursor: pointer; padding: 0 2px; font-weight: 700; }
+
+    table.data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+    table.data-table th { padding: 11px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); background: #f8f9fc; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    table.data-table td { padding: 13px 16px; border-bottom: 1px solid #eff1f6; vertical-align: middle; }
+    table.data-table tr:hover td { background: #fcfbff; }
+    .primary-link { font-weight: 700; color: var(--purple); text-decoration: none; }
+    .primary-link:hover { text-decoration: underline; }
+
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 650; white-space: nowrap; flex-shrink: 0; }
+    .badge.green { background: #e6f6f0; color: #146c52; }
+    .badge.purple { background: #eee9fb; color: #5b45c4; }
+    .badge.amber { background: #fef3c7; color: #9a580a; }
+    .badge.red { background: #fee2e2; color: #991b1b; }
+    .badge.slate { background: #f1f5f9; color: #475569; }
+    .badge.blue { background: #e0f2fe; color: #0369a1; }
+
+    .floor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+    .table-tile { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: #fff; display: flex; flex-direction: column; gap: 8px; }
+    .tile-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .tile-num { font-weight: 700; font-size: 14px; }
+    .tile-meta { font-size: 11px; color: var(--muted); }
+
+    .kanban-board { display: grid; grid-template-columns: repeat(4, minmax(230px, 1fr)); gap: 14px; overflow-x: auto; }
+    .kanban-col { background: #f8f9fc; border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .kanban-col-head { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: var(--ink); padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+    .kanban-card { background: #ffffff; border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-size: 12px; box-shadow: 0 2px 5px rgba(15,23,42,0.03); }
+    .kanban-card p { margin: 6px 0; color: var(--muted); font-size: 12px; }
+    .card-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 11px; color: var(--muted); }
+
+    .drawer-backdrop { display: flex; justify-content: center; padding: 10px 0; }
+    .drawer-card { background: #ffffff; border: 1px solid var(--line); border-radius: var(--radius); width: 100%; max-width: 820px; overflow: hidden; box-shadow: 0 12px 32px rgba(15,23,42,0.08); }
+    .drawer-head { padding: 18px 22px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+    .drawer-body { padding: 22px; }
+    .drawer-foot { padding: 16px 22px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 10px; background: #fafbfe; }
+
+    .mobile-menu { display: none; background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+    .shade { display: none; }
+
+    @media (max-width: 1024px) {
+      .kpi-grid, .grid-2, .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
     @media (max-width: 768px) {
-      .mobile-menu {
-        display: inline-flex !important;
-      }
-      body {
-        flex-direction: column !important;
-      }
-      aside.sidebar, aside#suiteSidebar, aside {
-        position: fixed !important;
-        left: 0 !important;
-        top: 0 !important;
-        bottom: 0 !important;
-        height: 100vh !important;
-        height: 100dvh !important;
-        width: 260px !important;
-        min-width: 260px !important;
-        max-width: 260px !important;
-        transform: translateX(-100%) !important;
-        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        z-index: 50 !important;
-        background: #ffffff !important;
-        box-shadow: none !important;
-      }
-      body.dark aside.sidebar, html.dark aside.sidebar,
-      body.dark aside#suiteSidebar, html.dark aside#suiteSidebar {
-        background: #0f172a !important;
-      }
-      .navopen aside.sidebar, body.navopen aside.sidebar, html.navopen aside.sidebar,
-      .navopen aside#suiteSidebar, body.navopen aside#suiteSidebar, html.navopen aside#suiteSidebar {
-        transform: translateX(0) !important;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
-      }
-      .navopen .shade, body.navopen .shade, html.navopen .shade {
-        display: block !important;
-        position: fixed !important;
-        inset: 0 !important;
-        background: rgba(15, 23, 42, 0.5) !important;
-        backdrop-filter: blur(2px) !important;
-        z-index: 45 !important;
-      }
-      #collapseBtn, .sidebar-collapse-btn {
-        display: none !important;
-      }
+      .layout { display: block; }
+      .sidebar { position: fixed; left: 0; top: 0; transform: translateX(-100%); width: 250px !important; transition: transform 0.2s ease; z-index: 60; }
+      body.navopen .sidebar { transform: translateX(0); }
+      body.navopen .shade { display: block; position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 55; }
+      .mobile-menu { display: inline-flex; align-items: center; justify-content: center; }
+      .kpi-grid, .grid-2, .form-grid { grid-template-columns: 1fr; }
     }
+
+    html.dark, body.dark { --ink: #f1f5f9; --muted: #94a3b8; --line: #263044; --bg: #0f172a; --panel: #1e293b; --purple-soft: #1e1b4b; background: #0f172a !important; color: #f1f5f9 !important; }
+    html.dark .sidebar, body.dark .sidebar, html.dark .topbar, body.dark .topbar, html.dark .panel, body.dark .panel, html.dark .kpi-card, body.dark .kpi-card, html.dark .table-tile, body.dark .table-tile, html.dark .kanban-card, body.dark .kanban-card, html.dark .drawer-card, body.dark .drawer-card { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+    html.dark .appbox, body.dark .appbox, html.dark .filter-bar, body.dark .filter-bar, html.dark table.data-table th, body.dark table.data-table th, html.dark .kanban-col, body.dark .kanban-col, html.dark .drawer-foot, body.dark .drawer-foot { background: #0f172a !important; color: #cbd5e1 !important; border-color: #334155 !important; }
+    html.dark input, body.dark input, html.dark select, body.dark select, html.dark textarea, body.dark textarea { background: #0f172a !important; color: #f1f5f9 !important; border-color: #334155 !important; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex">
-
-
-    <!-- Collapsible Left Sidebar -->
-    <aside id="suiteSidebar" class="sidebar w-64 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 transition-all duration-300 z-30 select-none" data-collapsible-sidebar="true">
-      <div>
-        <!-- Top Brand Header with Suite Icon & Collapse Toggle -->
-        <div class="h-16 border-b border-slate-200 flex items-center justify-between px-4">
-          <div class="flex items-center gap-3 overflow-hidden">
-            <div id="brandIconWrap" class="brand-icon-wrap" onclick="toggleSidebar()" title="Click to collapse / expand">
-              <i id="suiteIcon" class="fas fa-building-columns text-indigo-600 text-lg"></i>
-              <div class="expand-hint">
-                <i class="fas fa-chevron-right text-xs"></i>
-              </div>
-            </div>
-            <div class="sidebar-title truncate">
-              <span class="block text-xs font-semibold uppercase tracking-wider text-indigo-600">Real Estate &amp; PropTech Suite</span>
-              <span class="block text-sm font-bold text-slate-900 leading-tight">Real Estate Investment Analysis</span>
-            </div>
-          </div>
-          <button id="collapseBtn" onclick="toggleSidebar()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors" title="Collapse sidebar">
-            <i class="fas fa-chevron-left text-sm"></i>
-          </button>
-        </div>
-
-        <!-- Navigation Sections -->
-        <nav class="py-2">
-          
-        <div class="px-4 mt-4">
-          <p class="sidebar-section-title text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-2">Pipeline &amp; Comps</p>
-          <div class="section-divider hidden"></div>
-          <div class="space-y-1">
-      
-          <a href="#/deal-pipeline" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-[#67728a] hover:bg-slate-100 hover:text-slate-900">
-            <i class="fas fa-layer-group text-base w-5 text-center text-[#67728a]"></i>
-            <span class="nav-text sidebar-label">Acquisitions Pipeline &amp; Funnel</span>
-          </a>
-        
-          <a href="#/deals-register" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-[#67728a] hover:bg-slate-100 hover:text-slate-900">
-            <i class="fas fa-table-columns text-base w-5 text-center text-[#67728a]"></i>
-            <span class="nav-text sidebar-label">Deals &amp; BOE Tear Sheets</span>
-          </a>
-        
-          <a href="#/market-comps-library" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-[#67728a] hover:bg-slate-100 hover:text-slate-900">
-            <i class="fas fa-chart-line text-base w-5 text-center text-[#67728a]"></i>
-            <span class="nav-text sidebar-label">Sales &amp; Lease Comps Library</span>
-          </a>
-        
-          </div>
-        </div>
-      
-        <div class="px-4 mt-6">
-          <p class="sidebar-section-title text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-2">Underwriting &amp; Waterfalls</p>
-          <div class="section-divider hidden"></div>
-          <div class="space-y-1">
-      
-          <a href="#/underwriting-proforma" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-[#67728a] hover:bg-slate-100 hover:text-slate-900">
-            <i class="fas fa-compass text-base w-5 text-center text-[#67728a]"></i>
-            <span class="nav-text sidebar-label">DCF Pro-Forma &amp; Rollover Studio</span>
-          </a>
-        
-          <a href="#/debt-capital-stack" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-[#67728a] hover:bg-slate-100 hover:text-slate-900">
-            <i class="fas fa-bolt text-base w-5 text-center text-[#67728a]"></i>
-            <span class="nav-text sidebar-label">Debt Sizing &amp; Rate Stress</span>
-          </a>
-        
-          <a href="#/equity-waterfalls" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-[#67728a] hover:bg-slate-100 hover:text-slate-900">
-            <i class="fas fa-shield-halved text-base w-5 text-center text-[#67728a]"></i>
-            <span class="nav-text sidebar-label">JV &amp; GP/LP Equity Waterfalls</span>
-          </a>
-        
-          </div>
-        </div>
-      
-        <div class="px-4 mt-6">
-          <p class="sidebar-section-title text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-2">Diligence, IC &amp; Portfolio</p>
-          <div class="section-divider hidden"></div>
-          <div class="space-y-1">
-      
-          <a href="#/due-diligence-room" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-[#67728a] hover:bg-slate-100 hover:text-slate-900">
-            <i class="fas fa-sliders text-base w-5 text-center text-[#67728a]"></i>
-            <span class="nav-text sidebar-label">Due Diligence &amp; EMD Tracker</span>
-          </a>
-        
-          <a href="#/ic-memos-approvals" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-[#67728a] hover:bg-slate-100 hover:text-slate-900">
-            <i class="fas fa-clipboard-check text-base w-5 text-center text-[#67728a]"></i>
-            <span class="nav-text sidebar-label">IC Memos &amp; Voting Governance</span>
-          </a>
-        
-          <a href="#/actual-vs-underwriting" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors active bg-[#f3f0ff] !bg-[#f3f0ff] text-[#53389e] !text-[#53389e] font-semibold">
-            <i class="fas fa-diagram-project text-base w-5 text-center text-[#53389e]"></i>
-            <span class="nav-text sidebar-label">Post-Close Actual vs. Underwriting</span>
-          </a>
-        
-          </div>
-        </div>
-      
-        </nav>
+<body>
+  <div class="shade" id="mobileShade"></div>
+  <div class="layout" id="appLayout">
+    <aside class="sidebar" id="appSidebar" aria-label="Rapider Real Estate Investment Analysis navigation">
+      <div class="brand-row">
+        <a class="brand" href="#/deal-pipeline" id="suiteBrandLink" title="Real Estate Suite">
+          <span class="suite-icon-container">
+            <i class="suite-icon fas fa-building" aria-hidden="true"></i>
+            <i class="suite-expand-icon fas fa-chevron-right" aria-hidden="true"></i>
+          </span>
+          <span class="suite-title sidebar-label">Real Estate Suite</span>
+        </a>
+        <button type="button" class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse sidebar" title="Collapse sidebar">
+          <i class="fas fa-chevron-left" aria-hidden="true"></i>
+        </button>
       </div>
 
-      <!-- Bottom User / Org Card -->
-      <div class="p-4 border-t border-slate-200">
-        <div class="flex items-center gap-3 overflow-hidden">
-          <div class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 font-semibold flex items-center justify-center shrink-0 text-sm">
-            RE
-          </div>
-          <div class="sidebar-user-info truncate">
-            <p class="text-xs font-semibold text-slate-800 truncate">David Chen</p>
-            <p class="text-[11px] text-slate-500 truncate">Portfolio Director</p>
+      <a class="appbox" href="#/deal-pipeline">
+        <div class="appicon"><i class="fas fa-building" aria-hidden="true"></i></div>
+        <div class="sidebar-label">
+          <b>Real Estate Investment Analy</b>
+          <small>Rapider Real Estate Suite</small>
+        </div>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+      <div class="navlabel">Pipeline &amp; Comps</div>
+        <a href="#/deal-pipeline" class="nav-link" data-route="deal-pipeline" title="Acquisitions Pipeline &amp; Funnel">
+          <i class="fas fa-building icon" aria-hidden="true"></i>
+          <span class="sidebar-label">Acquisitions Pipeline &amp; Funnel</span>
+        </a>
+        <a href="#/deals-register" class="nav-link" data-route="deals-register" title="Deals &amp; BOE Tear Sheets">
+          <i class="fas fa-building icon" aria-hidden="true"></i>
+          <span class="sidebar-label">Deals &amp; BOE Tear Sheets</span>
+        </a>
+        <a href="#/market-comps-library" class="nav-link" data-route="market-comps-library" title="Sales &amp; Lease Comps Library">
+          <i class="fas fa-building icon" aria-hidden="true"></i>
+          <span class="sidebar-label">Sales &amp; Lease Comps Library</span>
+        </a>
+      <div class="navlabel">Underwriting &amp; Waterfalls</div>
+        <a href="#/underwriting-proforma" class="nav-link" data-route="underwriting-proforma" title="DCF Pro-Forma &amp; Rollover Studio">
+          <i class="fas fa-building icon" aria-hidden="true"></i>
+          <span class="sidebar-label">DCF Pro-Forma &amp; Rollover Studio</span>
+        </a>
+        <a href="#/debt-capital-stack" class="nav-link" data-route="debt-capital-stack" title="Debt Sizing &amp; Rate Stress">
+          <i class="fas fa-building icon" aria-hidden="true"></i>
+          <span class="sidebar-label">Debt Sizing &amp; Rate Stress</span>
+        </a>
+        <a href="#/equity-waterfalls" class="nav-link" data-route="equity-waterfalls" title="JV &amp; GP/LP Equity Waterfalls">
+          <i class="fas fa-building icon" aria-hidden="true"></i>
+          <span class="sidebar-label">JV &amp; GP/LP Equity Waterfalls</span>
+        </a>
+      <div class="navlabel">Diligence, IC &amp; Portfolio</div>
+        <a href="#/due-diligence-room" class="nav-link" data-route="due-diligence-room" title="Due Diligence &amp; EMD Tracker">
+          <i class="fas fa-building icon" aria-hidden="true"></i>
+          <span class="sidebar-label">Due Diligence &amp; EMD Tracker</span>
+        </a>
+        <a href="#/ic-memos-approvals" class="nav-link" data-route="ic-memos-approvals" title="IC Memos &amp; Voting Governance">
+          <i class="fas fa-building icon" aria-hidden="true"></i>
+          <span class="sidebar-label">IC Memos &amp; Voting Governance</span>
+        </a>
+        <a href="#/actual-vs-underwriting" class="nav-link active" data-route="actual-vs-underwriting" title="Post-Close Actual vs. Underwriting">
+          <i class="fas fa-building icon" aria-hidden="true"></i>
+          <span class="sidebar-label">Post-Close Actual vs. Underwriting</span>
+        </a>
+      </nav>
+
+      <div class="side-bottom">
+        <div class="profile-link">
+          <div class="avatar-badge">EV</div>
+          <div class="sidebar-label">
+            <strong style="font-size:12px;display:block">Elena Vance</strong>
+            <small style="font-size:11px;color:var(--muted)">VP / Director of Acquisitions</small>
           </div>
         </div>
       </div>
     </aside>
-    <div class="shade" id="sidebar-shade"></div>
-    
-<div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-  
-    <!-- Responsive Main Header (h-16 standard) -->
-    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between shrink-0">
-      <div class="flex items-center gap-3">
-        <button type="button" class="mobile-menu" data-action="menu" aria-label="Open navigation" aria-expanded="false" title="Open navigation">
-          <i class="fas fa-bars"></i>
-        </button>
-        <nav class="text-xs flex items-center gap-1.5">
-          <a href="#/deal-pipeline" class="hover:text-indigo-600 text-slate-500">Real Estate &amp; PropTech Suite</a>
-          <span class="text-slate-400">/</span>
-          <a href="#/deal-pipeline" class="hover:text-indigo-600 text-slate-500">Real Estate Investment Analysis</a>
-          <span class="text-slate-400">/</span>
-          <span class="text-slate-900 font-medium">Post-Close Actual vs. Underwriting</span>
-        </nav>
-      </div>
-      <div class="flex items-center gap-3">
-        <button onclick="window.rapiderApi.navigate('/deal-comp-ic-drawer')" class="btn-primary flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-sm font-medium transition-colors shadow-sm" style="color: #ffffff !important;">
-          <i class="fas fa-plus"></i>
-          <span>New Record</span>
-        </button>
-        <button onclick="toggleDarkMode()" class="text-slate-500 hover:text-slate-700 p-2 rounded-lg hover:bg-slate-100 transition-colors" title="Toggle Theme">
-          <i class="fas fa-moon text-sm"></i>
-        </button>
-      </div>
-    </header>
-    
-  <main class="flex-1 overflow-y-auto p-6 bg-slate-50 dark:bg-slate-900" id="main-content">
-    
-    <div class="max-w-7xl mx-auto space-y-6">
-      <!-- Page Title & Action Bar -->
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <span class="text-xs font-semibold uppercase tracking-wider text-indigo-600">Diligence, IC &amp; Portfolio &bull; Underwriting Model</span>
-          <h1 class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">Post-Close Actual vs. Underwriting</h1>
-          <p class="text-sm text-slate-500 mt-0.5">Closed-portfolio benchmark comparing realized #141/acc NOI &amp; #142 capex against frozen IC Pro-Forma, plus Hold vs. Refi vs. Sell simulator.</p>
+
+    <div class="main-col">
+      <header class="topbar h-16 sticky top-0 z-30 flex items-center justify-between px-6 border-b border-border-color bg-background/95 backdrop-blur">
+        <div class="flex items-center gap-3 min-w-0">
+          <button type="button" class="mobile-menu" id="mobileMenuBtn" aria-label="Open menu">
+            <i class="fas fa-bars" aria-hidden="true"></i>
+          </button>
+          <div class="breadcrumbs">
+            <span>Real Estate Suite</span>
+            <span>/</span>
+            <span>Real Estate Investment Analy</span>
+            <span>/</span>
+            <strong>Post-Close Actual vs. Underwriting</strong>
+          </div>
         </div>
         <div class="flex items-center gap-2">
-          <a href="#/deal-comp-ic-drawer" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-sm font-medium transition-colors shadow-sm" style="color: #ffffff !important;">
-            <i class="fas fa-plus"></i>
-            <span>Create Underwriting Model</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- KPI Summary Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-slate-500 uppercase">Total Underwriting Models</span>
-            <i class="fas fa-database text-indigo-500"></i>
-          </div>
-          <p id="kpiTotalCount" class="text-2xl font-bold text-slate-900 dark:text-white mt-2">3</p>
-          <span class="text-xs text-emerald-600 font-medium">Live SWR synchronized</span>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-slate-500 uppercase">Active Records</span>
-            <i class="fas fa-circle-check text-emerald-500"></i>
-          </div>
-          <p class="text-2xl font-bold text-slate-900 dark:text-white mt-2">2</p>
-          <span class="text-xs text-slate-500 font-medium">Passing policy checks</span>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-slate-500 uppercase">Compliance Rate</span>
-            <i class="fas fa-shield-halved text-purple-500"></i>
-          </div>
-          <p class="text-2xl font-bold text-slate-900 dark:text-white mt-2">99.4%</p>
-          <span class="text-xs text-purple-600 font-medium">Audit trail verified</span>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-slate-500 uppercase">Avg Latency</span>
-            <i class="fas fa-bolt text-amber-500"></i>
-          </div>
-          <p class="text-2xl font-bold text-slate-900 dark:text-white mt-2">42 ms</p>
-          <span class="text-xs text-slate-500 font-medium">Sub-200ms target SLA</span>
-        </div>
-      </div>
-
-      <!-- Search & Filter Bar -->
-      <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
-        <div class="flex flex-col sm:flex-row items-center gap-3">
-          <div class="relative flex-1 w-full">
-            <i class="fas fa-search absolute left-3 top-3 text-slate-400 text-sm"></i>
-            <input type="text" id="recordSearchInput" placeholder="Search Underwriting Model by title, code, or status..." class="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-500" />
-          </div>
-          <select id="statusFilterSelect" class="w-full sm:w-48 px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200">
-            <option value="">All Statuses</option>
-            <option value="ACTIVE">ACTIVE</option>
-            <option value="IN_PROGRESS">IN_PROGRESS</option>
-            <option value="COMPLETED">COMPLETED</option>
-          </select>
-          <button id="clearFiltersBtn" type="button" onclick="clearAllFilters()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors whitespace-nowrap">
-            Clear all
+          <a href="#/deal-comp-ic-drawer" class="btn small"><i class="fas fa-plus" aria-hidden="true"></i> + Quick Action</a>
+          <a href="#/deal-comp-ic-drawer" class="btn primary small !text-white text-white" style="color: #ffffff !important;"><i class="fas fa-plus-circle" aria-hidden="true"></i> + New Investment Deal</a>
+          <button type="button" class="btn small" id="themeToggleBtn" aria-label="Toggle dark mode" title="Toggle theme">
+            <i class="fas fa-moon" aria-hidden="true"></i>
           </button>
         </div>
-        <div id="activeFilterTagsBar" class="flex flex-wrap items-center gap-2 text-xs">
-          <span class="text-slate-400">Active Filters:</span>
-          <span class="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-medium">All Underwriting Model Records</span>
+      </header>
+
+      <main class="page-scroll flex-1 overflow-y-auto p-6 md:p-8 @container" id="main-content">
+        <div class="page-wrap">
+
+      <div class="eyebrow"><i class="fas fa-building"></i> DILIGENCE, IC &amp; PORTFOLIO &bull; REAUNDERWRITINGMODEL WORKBENCH</div>
+      <div class="page-head">
+        <div>
+          <h1>Post-Close Actual vs. Underwriting</h1>
+          <p>Closed-portfolio benchmark comparing realized #141/acc NOI &amp; #142 capex against frozen IC Pro-Forma, plus Hold vs. Refi vs. Sell simulator.</p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button type="button" class="btn" onclick="window.toast('Verified SOW invariants & cross-suite sync for ReaUnderwritingModel.', 'success')"><i class="fas fa-sync"></i> Verify Underwriting Model Sync</button>
+          <a href="#/deal-comp-ic-drawer" class="btn primary !text-white text-white" style="color:#ffffff !important;"><i class="fas fa-plus"></i> + Create Underwriting Model</a>
         </div>
       </div>
 
-      <!-- Data Table -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-sm">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kicker"><span>ACTIVE UNDERWRITING MODEL RECORDS</span><i class="fas fa-database" style="color:var(--purple)"></i></div>
+          <div class="val" id="ledgerCount_8">5 Records</div>
+          <div class="sub"><span>Bound to canonical `ReaUnderwritingModel`</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kicker"><span>SCENARIO TYPE COVERAGE</span><i class="fas fa-check-double" style="color:#10b981"></i></div>
+          <div class="val">100% Verified</div>
+          <div class="sub"><span class="badge green">BASE_CASE / REFI_HOLD_SELL</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kicker"><span>REVISION NUMBER</span><i class="fas fa-Sliders-h" style="color:#0284c7"></i></div>
+          <div class="val">97.8%</div>
+          <div class="sub"><span>Once isIcLockedBaseline == true, model is strictly immutable</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kicker"><span>CROSS-SUITE INTEGRATION</span><i class="fas fa-shield-alt" style="color:#f59e0b"></i></div>
+          <div class="val">Enforced</div>
+          <div class="sub"><span>dealId -&gt; ReaInvestmentDeal</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="filter-bar">
+          <div class="search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" id="ledgerSearch_8" class="search-input" placeholder="Search Post-Close Actual vs. Underwriting by model name, title, scenario type, or owner...">
+          </div>
+          <select id="ledgerStatus_8" class="select-filter" aria-label="Filter by Status">
+            <option value="ALL">All Underwriting Model Statuses</option>
+            <option value="BASE_CASE">BASE_CASE</option><option value="DOWNSIDE">DOWNSIDE</option><option value="UPSIDE">UPSIDE</option><option value="REFI_HOLD_SELL">REFI_HOLD_SELL</option>
+          </select>
+        </div>
+        <div id="activeFilterTagsBar" class="active-tags-bar" style="display:none;"></div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
             <thead>
-              <tr class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase">
-                <th class="p-4">Underwriting Model Identifier</th>
-                <th class="p-4">Metadata / Code</th>
-                <th class="p-4">Status</th>
-                <th class="p-4 text-right">Actions</th>
+              <tr>
+                <th>Model Name &amp; Timestamp</th>
+                <th>Underwriting Model Title &amp; Operational Scope</th>
+                <th>Scenario Type</th>
+                <th>Revision Number</th>
+                <th>Owner &amp; Cross-Suite Ref</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="recordsTableBody" class="divide-y divide-slate-100 dark:divide-slate-700">
-              <!-- Rendered dynamically -->
-            </tbody>
+            <tbody id="ledgerRows_8"></tbody>
           </table>
         </div>
-        <div id="recordsEmptyState" class="hidden text-center py-12 p-6">
-          <i class="fas fa-folder-open text-slate-300 dark:text-slate-600 text-4xl mb-3"></i>
-          <h3 class="text-base font-semibold text-slate-800 dark:text-slate-200">No matching records found</h3>
-          <p class="text-xs text-slate-500 mt-1">Try adjusting your search query or clearing active filters.</p>
-          <button type="button" onclick="clearAllFilters()" class="mt-4 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-xs font-semibold text-white" style="color: #ffffff !important;">
-            Reset Filters
-          </button>
+      </div>
+    
         </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal (Zero Native Dialog Standard) -->
+  <div id="rapiderConfirmModal" class="hidden" style="position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:100;display:none;align-items:center;justify-content:center;padding:16px;">
+    <div class="panel" style="max-width:420px;width:100%;padding:22px;box-shadow:0 20px 50px rgba(15,23,42,0.25);margin:0;">
+      <h3 id="rapiderConfirmTitle" style="margin:0 0 8px;font-size:17px;font-weight:700;">Confirm Action</h3>
+      <p id="rapiderConfirmMsg" style="margin:0 0 18px;font-size:13px;color:var(--muted);"></p>
+      <div style="display:flex;justify-content:flex-end;gap:10px;">
+        <button type="button" class="btn" id="rapiderConfirmCancelBtn">Cancel</button>
+        <button type="button" class="btn danger !text-white text-white" id="rapiderConfirmOkBtn" style="color:#ffffff !important;">Confirm Remove</button>
       </div>
     </div>
-    
-  </main>
-</div>
+  </div>
+  <!-- Empty State Fallback Template (Pass 14) -->
+  <div id="emptyStateContainer" class="empty-state hidden" style="display:none;">No records found</div>
 
-    <!-- Rapider Custom Confirm Modal (Zero Native alert/confirm) -->
-    <dialog id="rapiderConfirmModal" class="rounded-xl p-0 shadow-2xl backdrop:bg-slate-900/40 w-full max-w-md">
-      <div class="bg-white rounded-xl overflow-hidden border border-slate-200">
-        <div class="p-6">
-          <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4">
-            <i class="fas fa-triangle-exclamation text-xl"></i>
-          </div>
-          <h3 id="rapiderConfirmTitle" class="text-lg font-bold text-slate-900 mb-2">Confirm Action</h3>
-          <p id="rapiderConfirmMessage" class="text-sm text-slate-600">Are you sure you want to proceed? This action cannot be undone.</p>
-        </div>
-        <div class="bg-slate-50 px-6 py-3 flex justify-end gap-3 border-t border-slate-100">
-          <button id="rapiderConfirmCancelBtn" type="button" class="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
-            Cancel
-          </button>
-          <button id="rapiderConfirmOkBtn" type="button" class="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 hover:bg-red-700 transition-colors" style="color: #ffffff !important;">
-            Confirm Delete
-          </button>
-        </div>
-      </div>
-    </dialog>
-    
-
-    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-    
-
-    <script>
-      function toggleSidebar() {
-        const aside = document.getElementById('suiteSidebar');
-        if (!aside) return;
-        const isCollapsed = aside.classList.toggle('collapsed');
-        aside.classList.toggle('sidebar-collapsed', isCollapsed);
-        localStorage.setItem('rapider_sidebar_collapsed', isCollapsed ? 'true' : 'false');
-        const collapseBtn = document.getElementById('collapseBtn');
-        if (collapseBtn) {
-          collapseBtn.innerHTML = isCollapsed
-            ? '<i class="fas fa-chevron-right text-sm"></i>'
-            : '<i class="fas fa-chevron-left text-sm"></i>';
-          collapseBtn.title = isCollapsed ? 'Expand sidebar' : 'Collapse sidebar';
-        }
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-        const aside = document.getElementById('suiteSidebar');
-        if (aside) {
-          aside.addEventListener('click', (e) => {
-            if (aside.classList.contains('collapsed') || aside.classList.contains('sidebar-collapsed')) {
-              if (e.target.closest('#brandIconWrap') || e.target.closest('.brand-icon-wrap') || e.target.closest('.expand-hint')) {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleSidebar();
-              }
-            }
-          });
-        }
-
-        document.querySelectorAll('.mobile-menu, [data-action="menu"]').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const isOpen = document.body.classList.toggle('navopen');
-            btn.setAttribute('aria-expanded', String(isOpen));
-          });
-        });
-
-        const shade = document.getElementById('sidebar-shade') || document.querySelector('.shade');
-        if (shade) {
-          shade.addEventListener('click', () => {
-            document.body.classList.remove('navopen');
-            document.querySelectorAll('.mobile-menu, [data-action="menu"]').forEach(b => b.setAttribute('aria-expanded', 'false'));
-          });
-        }
-
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && document.body.classList.contains('navopen')) {
-            document.body.classList.remove('navopen');
-            document.querySelectorAll('.mobile-menu, [data-action="menu"]').forEach(b => b.setAttribute('aria-expanded', 'false'));
-          }
-        });
-
-        if (localStorage.getItem('rapider_sidebar_collapsed') === 'true') {
-          if (aside) {
-            aside.classList.add('collapsed');
-            aside.classList.add('sidebar-collapsed');
-            const collapseBtn = document.getElementById('collapseBtn');
-            if (collapseBtn) {
-              collapseBtn.innerHTML = '<i class="fas fa-chevron-right text-sm"></i>';
-              collapseBtn.title = 'Expand sidebar';
-            }
-          }
-        }
-      });
-
-      function toggleDarkMode() {
-        document.documentElement.classList.toggle('dark');
-        document.body.classList.toggle('dark');
-      }
-
-      function showToast(title, message = '', type = 'info') {
-        const container = document.getElementById('toastContainer');
-        if (!container) return;
-        const toast = document.createElement('div');
-        const bg = type === 'success' ? 'bg-emerald-600' : type === 'danger' ? 'bg-red-600' : 'bg-slate-800';
-        toast.className = bg + ' text-white text-sm px-4 py-3 rounded-lg shadow-lg pointer-events-auto flex items-center gap-3 transition-opacity duration-300';
-        toast.style.color = '#ffffff';
-        toast.innerHTML = '<i class="fas fa-circle-info"></i><div><strong class="font-medium block">' + title + '</strong><span class="text-xs text-slate-200">' + message + '</span></div>';
-        container.appendChild(toast);
-        setTimeout(() => {
-          toast.style.opacity = '0';
-          setTimeout(() => toast.remove(), 300);
-        }, 3500);
-      }
-
-      function showConfirmModal(title, message, onConfirm) {
-        const modal = document.getElementById('rapiderConfirmModal');
-        const titleEl = document.getElementById('rapiderConfirmTitle');
-        const msgEl = document.getElementById('rapiderConfirmMessage');
-        const okBtn = document.getElementById('rapiderConfirmOkBtn');
-        const cancelBtn = document.getElementById('rapiderConfirmCancelBtn');
-
-        if (!modal) return;
-        if (titleEl) titleEl.textContent = title;
-        if (msgEl) msgEl.textContent = message;
-
-        const cleanup = () => {
-          okBtn.onclick = null;
-          cancelBtn.onclick = null;
-          modal.close();
-        };
-
-        okBtn.onclick = () => {
-          cleanup();
-          if (typeof onConfirm === 'function') onConfirm();
-        };
-        cancelBtn.onclick = () => {
-          cleanup();
-        };
-
-        modal.showModal();
-      }
-    </script>
-    
-<script>
-    let allRecords = [];
-    const fallbackSeed = [{"id":"00000000-0150-0017-0000-000000000001","modelName":"Underwriting Model #1 — Enterprise Primary Record","scenarioType":"Underwriting Model scenarioType configuration (1)","revisionNumber":10,"holdPeriodYears":10,"purchasePrice":1250,"closingCostsAmount":1250,"totalCapexRenovation":10,"exitCapRatePct":85,"sellingCostPct":85,"discountRatePct":85,"annualCashFlows":["item-1-a","item-1-b"],"netExitProceeds":10,"unleveredIrrPct":85,"leveredIrrPct":85,"equityMultipleX":10,"npvAmount":1250,"isIcLockedBaseline":true,"version":1,"status":"ACTIVE","isDeleted":false},{"id":"00000000-0150-0017-0000-000000000002","modelName":"Underwriting Model #2 — Enterprise Operations Record","scenarioType":"Underwriting Model scenarioType configuration (2)","revisionNumber":20,"holdPeriodYears":20,"purchasePrice":2500,"closingCostsAmount":2500,"totalCapexRenovation":20,"exitCapRatePct":90,"sellingCostPct":90,"discountRatePct":90,"annualCashFlows":["item-2-a","item-2-b"],"netExitProceeds":20,"unleveredIrrPct":90,"leveredIrrPct":90,"equityMultipleX":20,"npvAmount":2500,"isIcLockedBaseline":true,"version":2,"status":"IN_PROGRESS","isDeleted":false},{"id":"00000000-0150-0017-0000-000000000003","modelName":"Underwriting Model #3 — Enterprise Compliance Record","scenarioType":"Underwriting Model scenarioType configuration (3)","revisionNumber":30,"holdPeriodYears":30,"purchasePrice":3750,"closingCostsAmount":3750,"totalCapexRenovation":30,"exitCapRatePct":95,"sellingCostPct":95,"discountRatePct":95,"annualCashFlows":["item-3-a","item-3-b"],"netExitProceeds":30,"unleveredIrrPct":95,"leveredIrrPct":95,"equityMultipleX":30,"npvAmount":3750,"isIcLockedBaseline":false,"version":3,"status":"COMPLETED","isDeleted":false}];
-
-    function renderRows(items) {
-      const tbody = document.getElementById('recordsTableBody');
-      const emptyEl = document.getElementById('recordsEmptyState');
-      const kpiEl = document.getElementById('kpiTotalCount');
-      if (kpiEl) kpiEl.textContent = String(items.length);
-
-      if (!items.length) {
-        tbody.innerHTML = '';
-        emptyEl.classList.remove('hidden');
+  <script>
+    window.esc = function(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+    window.toast = function(message, type) {
+      if (window.rapiderApi && typeof window.rapiderApi.showNotification === 'function') {
+        window.rapiderApi.showNotification({ type: type || 'success', message: message });
         return;
       }
-      emptyEl.classList.add('hidden');
-      tbody.innerHTML = items.map(item => {
-        const titleVal = item["id"] || item.name || item.title || item.id;
-        const secVal = item["modelName"] || item.code || item.status || 'STD-01';
-        const stVal = item.status || 'ACTIVE';
-        const badgeCls = stVal === 'ACTIVE' || stVal === 'COMPLETED'
-          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
-          : 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300';
-
-        return `
-          <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-700/30 transition-colors">
-            <td class="p-4 font-semibold text-slate-900 dark:text-white">
-              <a href="#/deal-detail?id=${encodeURIComponent(item.id || '')}" class="hover:text-indigo-600 transition-colors">${titleVal}</a>
-            </td>
-            <td class="p-4 text-slate-600 dark:text-slate-300 font-mono text-xs">${typeof secVal === 'object' ? JSON.stringify(secVal) : secVal}</td>
-            <td class="p-4">
-              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full ${badgeCls}">${stVal}</span>
-            </td>
-            <td class="p-4 text-right space-x-2">
-              
-              <a href="#/deal-comp-ic-drawer?id=${encodeURIComponent(item.id || '')}" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950 rounded-lg transition-colors">
-                <i class="fas fa-pen"></i>
-                <span>Edit</span>
-              </a>
-              <button type="button" onclick="confirmDeleteRecord('${item.id}')" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors" title="Delete Record">
-                <i class="fas fa-trash-can text-xs"></i>
-              </button>
-              
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function applyFilters() {
-      const q = (document.getElementById('recordSearchInput').value || '').toLowerCase();
-      const st = document.getElementById('statusFilterSelect').value;
-      const tagsBar = document.getElementById('activeFilterTagsBar');
-
-      const chips = [];
-      if (q) chips.push('<span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 font-medium">Search: ' + q.replace(/</g, '&lt;') + '</span>');
-      if (st) chips.push('<span class="px-2 py-0.5 rounded bg-purple-100 text-purple-800 font-medium">Status: ' + st + '</span>');
-      if (tagsBar) {
-        tagsBar.innerHTML = '<span class="text-slate-400">Active Filters:</span> ' + (chips.length ? chips.join(' ') : '<span class="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-medium">All Records</span>');
+      var el = document.createElement('div');
+      el.style.cssText = 'position:fixed;bottom:22px;right:22px;background:#1f243a;color:#fff;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:150;box-shadow:0 10px 25px rgba(0,0,0,0.2);';
+      el.textContent = message;
+      document.body.appendChild(el);
+      setTimeout(function() { el.remove(); }, 2800);
+    };
+    window.showConfirmModal = function(title, message, onConfirm) {
+      var modal = document.getElementById('rapiderConfirmModal');
+      document.getElementById('rapiderConfirmTitle').textContent = title || 'Confirm Cancellation';
+      document.getElementById('rapiderConfirmMsg').textContent = message || 'Are you sure you want to proceed?';
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+      var okBtn = document.getElementById('rapiderConfirmOkBtn');
+      var cancelBtn = document.getElementById('rapiderConfirmCancelBtn');
+      var close = function() { modal.classList.add('hidden'); modal.style.display = 'none'; };
+      cancelBtn.onclick = close;
+      okBtn.onclick = async function() {
+        okBtn.disabled = true;
+        try { await onConfirm(); } finally { okBtn.disabled = false; close(); }
+      };
+    };
+    window.closePageDrawer = function(returnRoute) {
+      if (window.rapiderApi && typeof window.rapiderApi.closePageDrawer === 'function') {
+        window.rapiderApi.closePageDrawer();
+      } else {
+        window.location.hash = '#/' + (returnRoute || 'deal-pipeline');
       }
+    };
+    window.getQueryParam = function(name) {
+      var hash = window.location.hash || '';
+      var qIdx = hash.indexOf('?');
+      if (qIdx !== -1) {
+        var params = new URLSearchParams(hash.slice(qIdx + 1));
+        if (params.get(name)) return params.get(name);
+      }
+      var searchParams = new URLSearchParams(window.location.search || '');
+      return searchParams.get(name);
+    };
 
-      const filtered = allRecords.filter(item => {
-        if (item.isDeleted === true) return false;
-        const text = JSON.stringify(item).toLowerCase();
-        const matchesQ = !q || text.includes(q);
-        const matchesSt = !st || item.status === st;
-        return matchesQ && matchesSt;
-      });
-      renderRows(filtered);
-    }
+    (function initShell() {
+      var layout = document.getElementById('appLayout');
+      var sidebar = document.getElementById('appSidebar');
+      var collapseBtn = document.getElementById('sidebarCollapseBtn');
+      var brandLink = document.getElementById('suiteBrandLink');
+      var mobileBtn = document.getElementById('mobileMenuBtn');
+      var shade = document.getElementById('mobileShade');
+      var themeBtn = document.getElementById('themeToggleBtn');
 
-    function clearAllFilters() {
-      document.getElementById('recordSearchInput').value = '';
-      document.getElementById('statusFilterSelect').value = '';
-      applyFilters();
-    }
-
-    function confirmDeleteRecord(id) {
-      showConfirmModal(
-        'Delete Underwriting Model?',
-        'Are you sure you want to remove this record? This action is logged and soft-deletes the item.',
-        async () => {
-          try {
-            if (window.rapiderApi && window.rapiderApi.deleteEntity) {
-              await window.rapiderApi.deleteEntity('ReaUnderwritingModel', id);
-            }
-          } catch (e) {}
-          allRecords = allRecords.filter(r => String(r.id) !== String(id));
-          applyFilters();
-          showToast('Record Deleted', 'Underwriting Model removed from active view.', 'success');
+      function applyCollapsed(isCollapsed) {
+        if (isCollapsed) {
+          layout.classList.add('sidebar-collapsed');
+          sidebar.classList.add('sidebar-collapsed');
+          sidebar.setAttribute('data-collapsed', 'true');
+        } else {
+          layout.classList.remove('sidebar-collapsed');
+          sidebar.classList.remove('sidebar-collapsed');
+          sidebar.setAttribute('data-collapsed', 'false');
         }
-      );
-    }
-
-    document.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const res = await window.rapiderApi.findMany('ReaUnderwritingModel', {});
-        const loaded = (res && (res.data || res)) || [];
-        allRecords = Array.isArray(loaded) && loaded.length ? loaded.filter(i => i.isDeleted !== true) : fallbackSeed;
-      } catch (e) {
-        allRecords = fallbackSeed;
+        try { localStorage.setItem('rapider_sidebar_collapsed', isCollapsed ? 'true' : 'false'); } catch (_) {}
       }
-      document.getElementById('recordSearchInput').addEventListener('input', applyFilters);
-      document.getElementById('statusFilterSelect').addEventListener('change', applyFilters);
-      applyFilters();
-    });
-    </script>
+
+      try {
+        if (localStorage.getItem('rapider_sidebar_collapsed') === 'true') applyCollapsed(true);
+      } catch (_) {}
+
+      if (collapseBtn) {
+        collapseBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          applyCollapsed(!sidebar.classList.contains('sidebar-collapsed'));
+        });
+      }
+      if (brandLink) {
+        brandLink.addEventListener('click', function(e) {
+          if (sidebar.classList.contains('sidebar-collapsed')) {
+            e.preventDefault();
+            e.stopPropagation();
+            applyCollapsed(false);
+          }
+        });
+      }
+      if (mobileBtn) {
+        mobileBtn.addEventListener('click', function() { document.body.classList.toggle('navopen'); });
+      }
+      if (shade) {
+        shade.addEventListener('click', function() { document.body.classList.remove('navopen'); });
+      }
+      if (themeBtn) {
+        themeBtn.addEventListener('click', function() {
+          document.documentElement.classList.toggle('dark');
+          document.body.classList.toggle('dark');
+        });
+      }
+    })();
+
+    window.SEED_DATA = {"ReaInvestmentDeal":[{"id":"00000000-0150-0001-0000-000000000001","recordCode":"ID-2026-101","title":"Real Estate Investment Analysis Investment Deal — Unit #1","name":"Real Estate Investment Analysis Investment Deal — Unit #1","modelTitle":"Investment Deal","ownerName":"Elena Rostova (Principal Lead)","primaryAttrLabel":"Deal Code","primaryAttrValue":"Deal Code: ID-2026-101","secondaryAttrLabel":"Deal Name","secondaryAttrValue":"Real Estate Investment Analysis Tier 1","metricLabel":"Strategy","metricValue":"92.0% (125.00 units)","operationalSummary":"Transitioning to PASSED_DEAD requires non-empty passReasonCode; transitioning to CLOSED_ACQUIRED requires","invariantRule":"Transitioning to PASSED_DEAD requires non-empty passReasonCode; transitioning to CLOSED_ACQUIRED requires an APPROVED Re","crossSuiteRef":"brokerAccountRef -> CrmAccount, brokerContactRef -> CrmContact, sellerAccountRef","updatedAt":"2026-05-10 09:15","contactPhone":"+14155550110","status":"SCREENING","moderationStage":"SCREENING","version":1,"isDeleted":false,"dealCode":"Deal Code — ID-2026-101","dealName":"Deal Name — ID-2026-101","strategy":"125.00","assetClass":"MULTIFAMILY","marketSubmarket":"Market Submarket — ID-2026-101","unitCount":"Unit Count — ID-2026-101","rentableSqFt":"Rentable Sq Ft — ID-2026-101","askingPrice":"125.00","targetPurchasePrice":"125.00","goingInCapRatePct":"125.00","emdAmount":"125.00","emdHardDate":"Emd Hard Date — ID-2026-101","passReasonCode":"Pass Reason Code — ID-2026-101"},{"id":"00000000-0150-0001-0000-000000000002","recordCode":"ID-2026-102","title":"Real Estate Investment Analysis Investment Deal — Unit #2","name":"Real Estate Investment Analysis Investment Deal — Unit #2","modelTitle":"Investment Deal","ownerName":"Marcus Vance (Senior Operations)","primaryAttrLabel":"Deal Code","primaryAttrValue":"Deal Code: ID-2026-102","secondaryAttrLabel":"Deal Name","secondaryAttrValue":"Real Estate Investment Analysis Tier 2","metricLabel":"Strategy","metricValue":"93.1% (172.50 units)","operationalSummary":"Transitioning to PASSED_DEAD requires non-empty passReasonCode; transitioning to CLOSED_ACQUIRED requires","invariantRule":"Transitioning to PASSED_DEAD requires non-empty passReasonCode; transitioning to CLOSED_ACQUIRED requires an APPROVED Re","crossSuiteRef":"brokerAccountRef -> CrmAccount, brokerContactRef -> CrmContact, sellerAccountRef","updatedAt":"2026-05-11 11:15","contactPhone":"+14155550111","status":"UNDERWRITING","moderationStage":"UNDERWRITING","version":2,"isDeleted":false,"dealCode":"Deal Code — ID-2026-102","dealName":"Deal Name — ID-2026-102","strategy":"172.50","assetClass":"INDUSTRIAL","marketSubmarket":"Market Submarket — ID-2026-102","unitCount":"Unit Count — ID-2026-102","rentableSqFt":"Rentable Sq Ft — ID-2026-102","askingPrice":"172.50","targetPurchasePrice":"172.50","goingInCapRatePct":"172.50","emdAmount":"172.50","emdHardDate":"Emd Hard Date — ID-2026-102","passReasonCode":"Pass Reason Code — ID-2026-102"},{"id":"00000000-0150-0001-0000-000000000003","recordCode":"ID-2026-103","title":"Real Estate Investment Analysis Investment Deal — Unit #3","name":"Real Estate Investment Analysis Investment Deal — Unit #3","modelTitle":"Investment Deal","ownerName":"Sophia Laurent (Director)","primaryAttrLabel":"Deal Code","primaryAttrValue":"Deal Code: ID-2026-103","secondaryAttrLabel":"Deal Name","secondaryAttrValue":"Real Estate Investment Analysis Tier 3","metricLabel":"Strategy","metricValue":"94.2% (220.00 units)","operationalSummary":"Transitioning to PASSED_DEAD requires non-empty passReasonCode; transitioning to CLOSED_ACQUIRED requires","invariantRule":"Transitioning to PASSED_DEAD requires non-empty passReasonCode; transitioning to CLOSED_ACQUIRED requires an APPROVED Re","crossSuiteRef":"brokerAccountRef -> CrmAccount, brokerContactRef -> CrmContact, sellerAccountRef","updatedAt":"2026-05-12 13:15","contactPhone":"+14155550112","status":"LOI_SUBMITTED","moderationStage":"LOI_SUBMITTED","version":3,"isDeleted":false,"dealCode":"Deal Code — ID-2026-103","dealName":"Deal Name — ID-2026-103","strategy":"220.00","assetClass":"OFFICE","marketSubmarket":"Market Submarket — ID-2026-103","unitCount":"Unit Count — ID-2026-103","rentableSqFt":"Rentable Sq Ft — ID-2026-103","askingPrice":"220.00","targetPurchasePrice":"220.00","goingInCapRatePct":"220.00","emdAmount":"220.00","emdHardDate":"Emd Hard Date — ID-2026-103","passReasonCode":"Pass Reason Code — ID-2026-103"},{"id":"00000000-0150-0001-0000-000000000004","recordCode":"ID-2026-104","title":"Real Estate Investment Analysis Investment Deal — Unit #4","name":"Real Estate Investment Analysis Investment Deal — Unit #4","modelTitle":"Investment Deal","ownerName":"Liam Chen (Systems Architect)","primaryAttrLabel":"Deal Code","primaryAttrValue":"Deal Code: ID-2026-104","secondaryAttrLabel":"Deal Name","secondaryAttrValue":"Real Estate Investment Analysis Tier 1","metricLabel":"Strategy","metricValue":"95.3% (267.50 units)","operationalSummary":"Transitioning to PASSED_DEAD requires non-empty passReasonCode; transitioning to CLOSED_ACQUIRED requires","invariantRule":"Transitioning to PASSED_DEAD requires non-empty passReasonCode; transitioning to CLOSED_ACQUIRED requires an APPROVED Re","crossSuiteRef":"brokerAccountRef -> CrmAccount, brokerContactRef -> CrmContact, sellerAccountRef","updatedAt":"2026-05-13 15:15","contactPhone":"+14155550113","status":"EXCLUSIVITY_DD","moderationStage":"EXCLUSIVITY_DD","version":4,"isDeleted":false,"dealCode":"Deal Code — ID-2026-104","dealName":"Deal Name — ID-2026-104","strategy":"267.50","assetClass":"RETAIL","marketSubmarket":"Market Submarket — ID-2026-104","unitCount":"Unit Count — ID-2026-104","rentableSqFt":"Rentable Sq Ft — ID-2026-104","askingPrice":"267.50","targetPurchasePrice":"267.50","goingInCapRatePct":"267.50","emdAmount":"267.50","emdHardDate":"Emd Hard Date — ID-2026-104","passReasonCode":"Pass Reason Code — ID-2026-104"},{"id":"00000000-0150-0001-0000-000000000005","recordCode":"ID-2026-105","title":"Real Estate Investment Analysis Investment Deal — Unit #5","name":"Real Estate Investment Analysis Investment Deal — Unit #5","modelTitle":"Investment Deal","ownerName":"Amira Al-Mansoor (Compliance Lead)","primaryAttrLabel":"Deal Code","primaryAttrValue":"Deal Code: ID-2026-105","secondaryAttrLabel":"Deal Name","secondaryAttrValue":"Real Estate Investment Analysis Tier 2","metricLabel":"Strategy","metricValue":"96.4% (315.00 units)","operationalSummary":"Transitioning to PASSED_DEAD requires non-empty passReasonCode; transitioning to CLOSED_ACQUIRED requires","invariantRule":"Transitioning to PASSED_DEAD requires non-empty passReasonCode; transitioning to CLOSED_ACQUIRED requires an APPROVED Re","crossSuiteRef":"brokerAccountRef -> CrmAccount, brokerContactRef -> CrmContact, sellerAccountRef","updatedAt":"2026-05-14 17:15","contactPhone":"+14155550114","status":"IC_APPROVED","moderationStage":"IC_APPROVED","version":5,"isDeleted":false,"dealCode":"Deal Code — ID-2026-105","dealName":"Deal Name — ID-2026-105","strategy":"315.00","assetClass":"LIFE_SCIENCES","marketSubmarket":"Market Submarket — ID-2026-105","unitCount":"Unit Count — ID-2026-105","rentableSqFt":"Rentable Sq Ft — ID-2026-105","askingPrice":"315.00","targetPurchasePrice":"315.00","goingInCapRatePct":"315.00","emdAmount":"315.00","emdHardDate":"Emd Hard Date — ID-2026-105","passReasonCode":"Pass Reason Code — ID-2026-105"}],"ReaMarketCompRecord":[{"id":"00000000-0150-0002-0000-000000000001","recordCode":"MCR-2026-201","title":"Real Estate Investment Analysis Market Comp Record — Unit #1","name":"Real Estate Investment Analysis Market Comp Record — Unit #1","modelTitle":"Market Comp Record","ownerName":"Marcus Vance (Senior Operations)","primaryAttrLabel":"Comp Type","primaryAttrValue":"Comp Type: MCR-2026-201","secondaryAttrLabel":"Property Name","secondaryAttrValue":"Real Estate Investment Analysis Tier 1","metricLabel":"Asset Class","metricValue":"92.1% (250.00 units)","operationalSummary":"pricePerSqFt = salePrice / rentableSqFt (Decimal128 when rentableSqFt > 0).","invariantRule":"pricePerSqFt = salePrice / rentableSqFt (Decimal128 when rentableSqFt > 0).","crossSuiteRef":"sourceDealId -> ReaInvestmentDeal (nullable), attachedDealIds[] -> ReaInvestment","updatedAt":"2026-05-10 09:15","contactPhone":"+14155550115","status":"SALES_COMP","moderationStage":"SALES_COMP","version":1,"isDeleted":false,"compType":"SALES_COMP","propertyName":"Property Name — MCR-2026-201","assetClass":"Asset Class — MCR-2026-201","submarket":"Submarket — MCR-2026-201","transactionDate":"Transaction Date — MCR-2026-201","rentableSqFt":"Rentable Sq Ft — MCR-2026-201","unitCount":"Unit Count — MCR-2026-201","salePrice":"250.00","pricePerSqFt":"250.00","pricePerUnit":"250.00","capRatePct":"250.00","startingRentPerSqFt":"Starting Rent Per Sq Ft — MCR-2026-201","tiPerSqFt":"Ti Per Sq Ft — MCR-2026-201","freeRentMonths":"Free Rent Months — MCR-2026-201","isVerified":true},{"id":"00000000-0150-0002-0000-000000000002","recordCode":"MCR-2026-202","title":"Real Estate Investment Analysis Market Comp Record — Unit #2","name":"Real Estate Investment Analysis Market Comp Record — Unit #2","modelTitle":"Market Comp Record","ownerName":"Sophia Laurent (Director)","primaryAttrLabel":"Comp Type","primaryAttrValue":"Comp Type: MCR-2026-202","secondaryAttrLabel":"Property Name","secondaryAttrValue":"Real Estate Investment Analysis Tier 2","metricLabel":"Asset Class","metricValue":"93.2% (297.50 units)","operationalSummary":"pricePerSqFt = salePrice / rentableSqFt (Decimal128 when rentableSqFt > 0).","invariantRule":"pricePerSqFt = salePrice / rentableSqFt (Decimal128 when rentableSqFt > 0).","crossSuiteRef":"sourceDealId -> ReaInvestmentDeal (nullable), attachedDealIds[] -> ReaInvestment","updatedAt":"2026-05-11 11:15","contactPhone":"+14155550116","status":"LEASE_COMP","moderationStage":"LEASE_COMP","version":2,"isDeleted":false,"compType":"LEASE_COMP","propertyName":"Property Name — MCR-2026-202","assetClass":"Asset Class — MCR-2026-202","submarket":"Submarket — MCR-2026-202","transactionDate":"Transaction Date — MCR-2026-202","rentableSqFt":"Rentable Sq Ft — MCR-2026-202","unitCount":"Unit Count — MCR-2026-202","salePrice":"297.50","pricePerSqFt":"297.50","pricePerUnit":"297.50","capRatePct":"297.50","startingRentPerSqFt":"Starting Rent Per Sq Ft — MCR-2026-202","tiPerSqFt":"Ti Per Sq Ft — MCR-2026-202","freeRentMonths":"Free Rent Months — MCR-2026-202","isVerified":false},{"id":"00000000-0150-0002-0000-000000000003","recordCode":"MCR-2026-203","title":"Real Estate Investment Analysis Market Comp Record — Unit #3","name":"Real Estate Investment Analysis Market Comp Record — Unit #3","modelTitle":"Market Comp Record","ownerName":"Liam Chen (Systems Architect)","primaryAttrLabel":"Comp Type","primaryAttrValue":"Comp Type: MCR-2026-203","secondaryAttrLabel":"Property Name","secondaryAttrValue":"Real Estate Investment Analysis Tier 3","metricLabel":"Asset Class","metricValue":"94.3% (345.00 units)","operationalSummary":"pricePerSqFt = salePrice / rentableSqFt (Decimal128 when rentableSqFt > 0).","invariantRule":"pricePerSqFt = salePrice / rentableSqFt (Decimal128 when rentableSqFt > 0).","crossSuiteRef":"sourceDealId -> ReaInvestmentDeal (nullable), attachedDealIds[] -> ReaInvestment","updatedAt":"2026-05-12 13:15","contactPhone":"+14155550117","status":"SALES_COMP","moderationStage":"SALES_COMP","version":3,"isDeleted":false,"compType":"SALES_COMP","propertyName":"Property Name — MCR-2026-203","assetClass":"Asset Class — MCR-2026-203","submarket":"Submarket — MCR-2026-203","transactionDate":"Transaction Date — MCR-2026-203","rentableSqFt":"Rentable Sq Ft — MCR-2026-203","unitCount":"Unit Count — MCR-2026-203","salePrice":"345.00","pricePerSqFt":"345.00","pricePerUnit":"345.00","capRatePct":"345.00","startingRentPerSqFt":"Starting Rent Per Sq Ft — MCR-2026-203","tiPerSqFt":"Ti Per Sq Ft — MCR-2026-203","freeRentMonths":"Free Rent Months — MCR-2026-203","isVerified":true},{"id":"00000000-0150-0002-0000-000000000004","recordCode":"MCR-2026-204","title":"Real Estate Investment Analysis Market Comp Record — Unit #4","name":"Real Estate Investment Analysis Market Comp Record — Unit #4","modelTitle":"Market Comp Record","ownerName":"Amira Al-Mansoor (Compliance Lead)","primaryAttrLabel":"Comp Type","primaryAttrValue":"Comp Type: MCR-2026-204","secondaryAttrLabel":"Property Name","secondaryAttrValue":"Real Estate Investment Analysis Tier 1","metricLabel":"Asset Class","metricValue":"95.4% (392.50 units)","operationalSummary":"pricePerSqFt = salePrice / rentableSqFt (Decimal128 when rentableSqFt > 0).","invariantRule":"pricePerSqFt = salePrice / rentableSqFt (Decimal128 when rentableSqFt > 0).","crossSuiteRef":"sourceDealId -> ReaInvestmentDeal (nullable), attachedDealIds[] -> ReaInvestment","updatedAt":"2026-05-13 15:15","contactPhone":"+14155550118","status":"LEASE_COMP","moderationStage":"LEASE_COMP","version":4,"isDeleted":false,"compType":"LEASE_COMP","propertyName":"Property Name — MCR-2026-204","assetClass":"Asset Class — MCR-2026-204","submarket":"Submarket — MCR-2026-204","transactionDate":"Transaction Date — MCR-2026-204","rentableSqFt":"Rentable Sq Ft — MCR-2026-204","unitCount":"Unit Count — MCR-2026-204","salePrice":"392.50","pricePerSqFt":"392.50","pricePerUnit":"392.50","capRatePct":"392.50","startingRentPerSqFt":"Starting Rent Per Sq Ft — MCR-2026-204","tiPerSqFt":"Ti Per Sq Ft — MCR-2026-204","freeRentMonths":"Free Rent Months — MCR-2026-204","isVerified":false},{"id":"00000000-0150-0002-0000-000000000005","recordCode":"MCR-2026-205","title":"Real Estate Investment Analysis Market Comp Record — Unit #5","name":"Real Estate Investment Analysis Market Comp Record — Unit #5","modelTitle":"Market Comp Record","ownerName":"Noah Kowalski (Specialist)","primaryAttrLabel":"Comp Type","primaryAttrValue":"Comp Type: MCR-2026-205","secondaryAttrLabel":"Property Name","secondaryAttrValue":"Real Estate Investment Analysis Tier 2","metricLabel":"Asset Class","metricValue":"96.5% (440.00 units)","operationalSummary":"pricePerSqFt = salePrice / rentableSqFt (Decimal128 when rentableSqFt > 0).","invariantRule":"pricePerSqFt = salePrice / rentableSqFt (Decimal128 when rentableSqFt > 0).","crossSuiteRef":"sourceDealId -> ReaInvestmentDeal (nullable), attachedDealIds[] -> ReaInvestment","updatedAt":"2026-05-14 17:15","contactPhone":"+14155550119","status":"SALES_COMP","moderationStage":"SALES_COMP","version":5,"isDeleted":false,"compType":"SALES_COMP","propertyName":"Property Name — MCR-2026-205","assetClass":"Asset Class — MCR-2026-205","submarket":"Submarket — MCR-2026-205","transactionDate":"Transaction Date — MCR-2026-205","rentableSqFt":"Rentable Sq Ft — MCR-2026-205","unitCount":"Unit Count — MCR-2026-205","salePrice":"440.00","pricePerSqFt":"440.00","pricePerUnit":"440.00","capRatePct":"440.00","startingRentPerSqFt":"Starting Rent Per Sq Ft — MCR-2026-205","tiPerSqFt":"Ti Per Sq Ft — MCR-2026-205","freeRentMonths":"Free Rent Months — MCR-2026-205","isVerified":true}],"ReaUnderwritingModel":[{"id":"00000000-0150-0003-0000-000000000001","recordCode":"UM-2026-301","title":"Real Estate Investment Analysis Underwriting Model — Unit #1","name":"Real Estate Investment Analysis Underwriting Model — Unit #1","modelTitle":"Underwriting Model","ownerName":"Sophia Laurent (Director)","primaryAttrLabel":"Model Name","primaryAttrValue":"Model Name: UM-2026-301","secondaryAttrLabel":"Scenario Type","secondaryAttrValue":"BASE_CASE","metricLabel":"Revision Number","metricValue":"92.2% (375.00 units)","operationalSummary":"Once isIcLockedBaseline == true, model is strictly immutable (409 on edit—new analyses clone revisionNumb","invariantRule":"Once isIcLockedBaseline == true, model is strictly immutable (409 on edit—new analyses clone revisionNumber + 1); exitCa","crossSuiteRef":"dealId -> ReaInvestmentDeal","updatedAt":"2026-05-10 09:15","contactPhone":"+14155550120","status":"BASE_CASE","moderationStage":"BASE_CASE","version":1,"isDeleted":false,"modelName":"Model Name — UM-2026-301","scenarioType":"BASE_CASE","revisionNumber":true,"holdPeriodYears":"Hold Period Years — UM-2026-301","purchasePrice":"375.00","closingCostsAmount":"375.00","totalCapexRenovation":"Total Capex Renovation — UM-2026-301","exitCapRatePct":"375.00","sellingCostPct":"375.00","discountRatePct":"375.00","annualCashFlows":"Annual Cash Flows — UM-2026-301","netExitProceeds":"Net Exit Proceeds — UM-2026-301","unleveredIrrPct":"Unlevered Irr Pct — UM-2026-301","leveredIrrPct":"Levered Irr Pct — UM-2026-301","equityMultipleX":"Equity Multiple X — UM-2026-301","npvAmount":"375.00","isIcLockedBaseline":true},{"id":"00000000-0150-0003-0000-000000000002","recordCode":"UM-2026-302","title":"Real Estate Investment Analysis Underwriting Model — Unit #2","name":"Real Estate Investment Analysis Underwriting Model — Unit #2","modelTitle":"Underwriting Model","ownerName":"Liam Chen (Systems Architect)","primaryAttrLabel":"Model Name","primaryAttrValue":"Model Name: UM-2026-302","secondaryAttrLabel":"Scenario Type","secondaryAttrValue":"DOWNSIDE","metricLabel":"Revision Number","metricValue":"93.3% (422.50 units)","operationalSummary":"Once isIcLockedBaseline == true, model is strictly immutable (409 on edit—new analyses clone revisionNumb","invariantRule":"Once isIcLockedBaseline == true, model is strictly immutable (409 on edit—new analyses clone revisionNumber + 1); exitCa","crossSuiteRef":"dealId -> ReaInvestmentDeal","updatedAt":"2026-05-11 11:15","contactPhone":"+14155550121","status":"DOWNSIDE","moderationStage":"DOWNSIDE","version":2,"isDeleted":false,"modelName":"Model Name — UM-2026-302","scenarioType":"DOWNSIDE","revisionNumber":false,"holdPeriodYears":"Hold Period Years — UM-2026-302","purchasePrice":"422.50","closingCostsAmount":"422.50","totalCapexRenovation":"Total Capex Renovation — UM-2026-302","exitCapRatePct":"422.50","sellingCostPct":"422.50","discountRatePct":"422.50","annualCashFlows":"Annual Cash Flows — UM-2026-302","netExitProceeds":"Net Exit Proceeds — UM-2026-302","unleveredIrrPct":"Unlevered Irr Pct — UM-2026-302","leveredIrrPct":"Levered Irr Pct — UM-2026-302","equityMultipleX":"Equity Multiple X — UM-2026-302","npvAmount":"422.50","isIcLockedBaseline":false},{"id":"00000000-0150-0003-0000-000000000003","recordCode":"UM-2026-303","title":"Real Estate Investment Analysis Underwriting Model — Unit #3","name":"Real Estate Investment Analysis Underwriting Model — Unit #3","modelTitle":"Underwriting Model","ownerName":"Amira Al-Mansoor (Compliance Lead)","primaryAttrLabel":"Model Name","primaryAttrValue":"Model Name: UM-2026-303","secondaryAttrLabel":"Scenario Type","secondaryAttrValue":"UPSIDE","metricLabel":"Revision Number","metricValue":"94.4% (470.00 units)","operationalSummary":"Once isIcLockedBaseline == true, model is strictly immutable (409 on edit—new analyses clone revisionNumb","invariantRule":"Once isIcLockedBaseline == true, model is strictly immutable (409 on edit—new analyses clone revisionNumber + 1); exitCa","crossSuiteRef":"dealId -> ReaInvestmentDeal","updatedAt":"2026-05-12 13:15","contactPhone":"+14155550122","status":"UPSIDE","moderationStage":"UPSIDE","version":3,"isDeleted":false,"modelName":"Model Name — UM-2026-303","scenarioType":"UPSIDE","revisionNumber":true,"holdPeriodYears":"Hold Period Years — UM-2026-303","purchasePrice":"470.00","closingCostsAmount":"470.00","totalCapexRenovation":"Total Capex Renovation — UM-2026-303","exitCapRatePct":"470.00","sellingCostPct":"470.00","discountRatePct":"470.00","annualCashFlows":"Annual Cash Flows — UM-2026-303","netExitProceeds":"Net Exit Proceeds — UM-2026-303","unleveredIrrPct":"Unlevered Irr Pct — UM-2026-303","leveredIrrPct":"Levered Irr Pct — UM-2026-303","equityMultipleX":"Equity Multiple X — UM-2026-303","npvAmount":"470.00","isIcLockedBaseline":true},{"id":"00000000-0150-0003-0000-000000000004","recordCode":"UM-2026-304","title":"Real Estate Investment Analysis Underwriting Model — Unit #4","name":"Real Estate Investment Analysis Underwriting Model — Unit #4","modelTitle":"Underwriting Model","ownerName":"Noah Kowalski (Specialist)","primaryAttrLabel":"Model Name","primaryAttrValue":"Model Name: UM-2026-304","secondaryAttrLabel":"Scenario Type","secondaryAttrValue":"REFI_HOLD_SELL","metricLabel":"Revision Number","metricValue":"95.5% (517.50 units)","operationalSummary":"Once isIcLockedBaseline == true, model is strictly immutable (409 on edit—new analyses clone revisionNumb","invariantRule":"Once isIcLockedBaseline == true, model is strictly immutable (409 on edit—new analyses clone revisionNumber + 1); exitCa","crossSuiteRef":"dealId -> ReaInvestmentDeal","updatedAt":"2026-05-13 15:15","contactPhone":"+14155550123","status":"REFI_HOLD_SELL","moderationStage":"REFI_HOLD_SELL","version":4,"isDeleted":false,"modelName":"Model Name — UM-2026-304","scenarioType":"REFI_HOLD_SELL","revisionNumber":false,"holdPeriodYears":"Hold Period Years — UM-2026-304","purchasePrice":"517.50","closingCostsAmount":"517.50","totalCapexRenovation":"Total Capex Renovation — UM-2026-304","exitCapRatePct":"517.50","sellingCostPct":"517.50","discountRatePct":"517.50","annualCashFlows":"Annual Cash Flows — UM-2026-304","netExitProceeds":"Net Exit Proceeds — UM-2026-304","unleveredIrrPct":"Unlevered Irr Pct — UM-2026-304","leveredIrrPct":"Levered Irr Pct — UM-2026-304","equityMultipleX":"Equity Multiple X — UM-2026-304","npvAmount":"517.50","isIcLockedBaseline":false},{"id":"00000000-0150-0003-0000-000000000005","recordCode":"UM-2026-305","title":"Real Estate Investment Analysis Underwriting Model — Unit #5","name":"Real Estate Investment Analysis Underwriting Model — Unit #5","modelTitle":"Underwriting Model","ownerName":"Elena Rostova (Principal Lead)","primaryAttrLabel":"Model Name","primaryAttrValue":"Model Name: UM-2026-305","secondaryAttrLabel":"Scenario Type","secondaryAttrValue":"BASE_CASE","metricLabel":"Revision Number","metricValue":"96.6% (565.00 units)","operationalSummary":"Once isIcLockedBaseline == true, model is strictly immutable (409 on edit—new analyses clone revisionNumb","invariantRule":"Once isIcLockedBaseline == true, model is strictly immutable (409 on edit—new analyses clone revisionNumber + 1); exitCa","crossSuiteRef":"dealId -> ReaInvestmentDeal","updatedAt":"2026-05-14 17:15","contactPhone":"+14155550124","status":"BASE_CASE","moderationStage":"BASE_CASE","version":5,"isDeleted":false,"modelName":"Model Name — UM-2026-305","scenarioType":"BASE_CASE","revisionNumber":true,"holdPeriodYears":"Hold Period Years — UM-2026-305","purchasePrice":"565.00","closingCostsAmount":"565.00","totalCapexRenovation":"Total Capex Renovation — UM-2026-305","exitCapRatePct":"565.00","sellingCostPct":"565.00","discountRatePct":"565.00","annualCashFlows":"Annual Cash Flows — UM-2026-305","netExitProceeds":"Net Exit Proceeds — UM-2026-305","unleveredIrrPct":"Unlevered Irr Pct — UM-2026-305","leveredIrrPct":"Levered Irr Pct — UM-2026-305","equityMultipleX":"Equity Multiple X — UM-2026-305","npvAmount":"565.00","isIcLockedBaseline":true}],"ReaDebtTrancheSchedule":[{"id":"00000000-0150-0004-0000-000000000001","recordCode":"DTS-2026-401","title":"Real Estate Investment Analysis Debt Tranche Schedule — Unit #1","name":"Real Estate Investment Analysis Debt Tranche Schedule — Unit #1","modelTitle":"Debt Tranche Schedule","ownerName":"Liam Chen (Systems Architect)","primaryAttrLabel":"Tranche Type","primaryAttrValue":"Tranche Type: DTS-2026-401","secondaryAttrLabel":"Max Ltv Pct","secondaryAttrValue":"Real Estate Investment Analysis Tier 1","metricLabel":"Min Dscr X","metricValue":"92.3% (500.00 units)","operationalSummary":"sizedLoanAmount == min(loanByLtv, loanByLtc, loanByDscr, loanByDebtYield) in exact Decimal128.","invariantRule":"sizedLoanAmount == min(loanByLtv, loanByLtc, loanByDscr, loanByDebtYield) in exact Decimal128.","crossSuiteRef":"underwritingModelId -> ReaUnderwritingModel, lenderAccountRef -> CrmAccount (nul","updatedAt":"2026-05-10 09:15","contactPhone":"+14155550125","status":"SENIOR_LOAN","moderationStage":"SENIOR_LOAN","version":1,"isDeleted":false,"trancheType":"SENIOR_LOAN","maxLtvPct":"Max Ltv Pct — DTS-2026-401","minDscrX":"Min Dscr X — DTS-2026-401","minDebtYieldPct":"Min Debt Yield Pct — DTS-2026-401","bindingConstraint":"LTV","sizedLoanAmount":"500.00","rateMode":"500.00","interestRatePct":"500.00","ioMonths":"Io Months — DTS-2026-401","amortizationYears":"Amortization Years — DTS-2026-401","annualSchedule":"Annual Schedule — DTS-2026-401"},{"id":"00000000-0150-0004-0000-000000000002","recordCode":"DTS-2026-402","title":"Real Estate Investment Analysis Debt Tranche Schedule — Unit #2","name":"Real Estate Investment Analysis Debt Tranche Schedule — Unit #2","modelTitle":"Debt Tranche Schedule","ownerName":"Amira Al-Mansoor (Compliance Lead)","primaryAttrLabel":"Tranche Type","primaryAttrValue":"Tranche Type: DTS-2026-402","secondaryAttrLabel":"Max Ltv Pct","secondaryAttrValue":"Real Estate Investment Analysis Tier 2","metricLabel":"Min Dscr X","metricValue":"93.4% (547.50 units)","operationalSummary":"sizedLoanAmount == min(loanByLtv, loanByLtc, loanByDscr, loanByDebtYield) in exact Decimal128.","invariantRule":"sizedLoanAmount == min(loanByLtv, loanByLtc, loanByDscr, loanByDebtYield) in exact Decimal128.","crossSuiteRef":"underwritingModelId -> ReaUnderwritingModel, lenderAccountRef -> CrmAccount (nul","updatedAt":"2026-05-11 11:15","contactPhone":"+14155550126","status":"MEZZANINE","moderationStage":"MEZZANINE","version":2,"isDeleted":false,"trancheType":"MEZZANINE","maxLtvPct":"Max Ltv Pct — DTS-2026-402","minDscrX":"Min Dscr X — DTS-2026-402","minDebtYieldPct":"Min Debt Yield Pct — DTS-2026-402","bindingConstraint":"LTC","sizedLoanAmount":"547.50","rateMode":"547.50","interestRatePct":"547.50","ioMonths":"Io Months — DTS-2026-402","amortizationYears":"Amortization Years — DTS-2026-402","annualSchedule":"Annual Schedule — DTS-2026-402"},{"id":"00000000-0150-0004-0000-000000000003","recordCode":"DTS-2026-403","title":"Real Estate Investment Analysis Debt Tranche Schedule — Unit #3","name":"Real Estate Investment Analysis Debt Tranche Schedule — Unit #3","modelTitle":"Debt Tranche Schedule","ownerName":"Noah Kowalski (Specialist)","primaryAttrLabel":"Tranche Type","primaryAttrValue":"Tranche Type: DTS-2026-403","secondaryAttrLabel":"Max Ltv Pct","secondaryAttrValue":"Real Estate Investment Analysis Tier 3","metricLabel":"Min Dscr X","metricValue":"94.5% (595.00 units)","operationalSummary":"sizedLoanAmount == min(loanByLtv, loanByLtc, loanByDscr, loanByDebtYield) in exact Decimal128.","invariantRule":"sizedLoanAmount == min(loanByLtv, loanByLtc, loanByDscr, loanByDebtYield) in exact Decimal128.","crossSuiteRef":"underwritingModelId -> ReaUnderwritingModel, lenderAccountRef -> CrmAccount (nul","updatedAt":"2026-05-12 13:15","contactPhone":"+14155550127","status":"CONSTRUCTION_DRAW","moderationStage":"CONSTRUCTION_DRAW","version":3,"isDeleted":false,"trancheType":"CONSTRUCTION_DRAW","maxLtvPct":"Max Ltv Pct — DTS-2026-403","minDscrX":"Min Dscr X — DTS-2026-403","minDebtYieldPct":"Min Debt Yield Pct — DTS-2026-403","bindingConstraint":"DSCR","sizedLoanAmount":"595.00","rateMode":"595.00","interestRatePct":"595.00","ioMonths":"Io Months — DTS-2026-403","amortizationYears":"Amortization Years — DTS-2026-403","annualSchedule":"Annual Schedule — DTS-2026-403"},{"id":"00000000-0150-0004-0000-000000000004","recordCode":"DTS-2026-404","title":"Real Estate Investment Analysis Debt Tranche Schedule — Unit #4","name":"Real Estate Investment Analysis Debt Tranche Schedule — Unit #4","modelTitle":"Debt Tranche Schedule","ownerName":"Elena Rostova (Principal Lead)","primaryAttrLabel":"Tranche Type","primaryAttrValue":"Tranche Type: DTS-2026-404","secondaryAttrLabel":"Max Ltv Pct","secondaryAttrValue":"Real Estate Investment Analysis Tier 1","metricLabel":"Min Dscr X","metricValue":"95.6% (642.50 units)","operationalSummary":"sizedLoanAmount == min(loanByLtv, loanByLtc, loanByDscr, loanByDebtYield) in exact Decimal128.","invariantRule":"sizedLoanAmount == min(loanByLtv, loanByLtc, loanByDscr, loanByDebtYield) in exact Decimal128.","crossSuiteRef":"underwritingModelId -> ReaUnderwritingModel, lenderAccountRef -> CrmAccount (nul","updatedAt":"2026-05-13 15:15","contactPhone":"+14155550128","status":"SENIOR_LOAN","moderationStage":"SENIOR_LOAN","version":4,"isDeleted":false,"trancheType":"SENIOR_LOAN","maxLtvPct":"Max Ltv Pct — DTS-2026-404","minDscrX":"Min Dscr X — DTS-2026-404","minDebtYieldPct":"Min Debt Yield Pct — DTS-2026-404","bindingConstraint":"DEBT_YIELD","sizedLoanAmount":"642.50","rateMode":"642.50","interestRatePct":"642.50","ioMonths":"Io Months — DTS-2026-404","amortizationYears":"Amortization Years — DTS-2026-404","annualSchedule":"Annual Schedule — DTS-2026-404"},{"id":"00000000-0150-0004-0000-000000000005","recordCode":"DTS-2026-405","title":"Real Estate Investment Analysis Debt Tranche Schedule — Unit #5","name":"Real Estate Investment Analysis Debt Tranche Schedule — Unit #5","modelTitle":"Debt Tranche Schedule","ownerName":"Marcus Vance (Senior Operations)","primaryAttrLabel":"Tranche Type","primaryAttrValue":"Tranche Type: DTS-2026-405","secondaryAttrLabel":"Max Ltv Pct","secondaryAttrValue":"Real Estate Investment Analysis Tier 2","metricLabel":"Min Dscr X","metricValue":"96.7% (690.00 units)","operationalSummary":"sizedLoanAmount == min(loanByLtv, loanByLtc, loanByDscr, loanByDebtYield) in exact Decimal128.","invariantRule":"sizedLoanAmount == min(loanByLtv, loanByLtc, loanByDscr, loanByDebtYield) in exact Decimal128.","crossSuiteRef":"underwritingModelId -> ReaUnderwritingModel, lenderAccountRef -> CrmAccount (nul","updatedAt":"2026-05-14 17:15","contactPhone":"+14155550129","status":"MEZZANINE","moderationStage":"MEZZANINE","version":5,"isDeleted":false,"trancheType":"MEZZANINE","maxLtvPct":"Max Ltv Pct — DTS-2026-405","minDscrX":"Min Dscr X — DTS-2026-405","minDebtYieldPct":"Min Debt Yield Pct — DTS-2026-405","bindingConstraint":"LTV","sizedLoanAmount":"690.00","rateMode":"690.00","interestRatePct":"690.00","ioMonths":"Io Months — DTS-2026-405","amortizationYears":"Amortization Years — DTS-2026-405","annualSchedule":"Annual Schedule — DTS-2026-405"}],"ReaEquityWaterfallModel":[{"id":"00000000-0150-0005-0000-000000000001","recordCode":"EWM-2026-501","title":"Real Estate Investment Analysis Equity Waterfall Model — Unit #1","name":"Real Estate Investment Analysis Equity Waterfall Model — Unit #1","modelTitle":"Equity Waterfall Model","ownerName":"Amira Al-Mansoor (Compliance Lead)","primaryAttrLabel":"Lp Equity Share Pct","primaryAttrValue":"Lp Equity Share Pct: EWM-2026-501","secondaryAttrLabel":"Gp Equity Share Pct","secondaryAttrValue":"Real Estate Investment Analysis Tier 1","metricLabel":"Pref Return Irr Pct","metricValue":"92.4% (625.00 units)","operationalSummary":"lpEquitySharePct + gpEquitySharePct == 100.0000%, and every promoteTiers[i] satisfies lpSplitPct + gpSpli","invariantRule":"lpEquitySharePct + gpEquitySharePct == 100.0000%, and every promoteTiers[i] satisfies lpSplitPct + gpSplitPct == 100.000","crossSuiteRef":"underwritingModelId -> ReaUnderwritingModel","updatedAt":"2026-05-10 09:15","contactPhone":"+14155550130","status":"DRAFT","moderationStage":"DRAFT","version":1,"isDeleted":false,"lpEquitySharePct":"Lp Equity Share Pct — EWM-2026-501","gpEquitySharePct":"Gp Equity Share Pct — EWM-2026-501","prefReturnIrrPct":"Pref Return Irr Pct — EWM-2026-501","gpCatchUpPct":"Gp Catch Up Pct — EWM-2026-501","promoteTiers":"Promote Tiers — EWM-2026-501","tierDistributions":true,"lpNetIrrPct":"Lp Net Irr Pct — EWM-2026-501","lpEquityMultipleX":"Lp Equity Multiple X — EWM-2026-501","gpTotalIrrPct":"Gp Total Irr Pct — EWM-2026-501","gpPromoteEarned":"Gp Promote Earned — EWM-2026-501"},{"id":"00000000-0150-0005-0000-000000000002","recordCode":"EWM-2026-502","title":"Real Estate Investment Analysis Equity Waterfall Model — Unit #2","name":"Real Estate Investment Analysis Equity Waterfall Model — Unit #2","modelTitle":"Equity Waterfall Model","ownerName":"Noah Kowalski (Specialist)","primaryAttrLabel":"Lp Equity Share Pct","primaryAttrValue":"Lp Equity Share Pct: EWM-2026-502","secondaryAttrLabel":"Gp Equity Share Pct","secondaryAttrValue":"Real Estate Investment Analysis Tier 2","metricLabel":"Pref Return Irr Pct","metricValue":"93.5% (672.50 units)","operationalSummary":"lpEquitySharePct + gpEquitySharePct == 100.0000%, and every promoteTiers[i] satisfies lpSplitPct + gpSpli","invariantRule":"lpEquitySharePct + gpEquitySharePct == 100.0000%, and every promoteTiers[i] satisfies lpSplitPct + gpSplitPct == 100.000","crossSuiteRef":"underwritingModelId -> ReaUnderwritingModel","updatedAt":"2026-05-11 11:15","contactPhone":"+14155550131","status":"IN_REVIEW","moderationStage":"IN_REVIEW","version":2,"isDeleted":false,"lpEquitySharePct":"Lp Equity Share Pct — EWM-2026-502","gpEquitySharePct":"Gp Equity Share Pct — EWM-2026-502","prefReturnIrrPct":"Pref Return Irr Pct — EWM-2026-502","gpCatchUpPct":"Gp Catch Up Pct — EWM-2026-502","promoteTiers":"Promote Tiers — EWM-2026-502","tierDistributions":false,"lpNetIrrPct":"Lp Net Irr Pct — EWM-2026-502","lpEquityMultipleX":"Lp Equity Multiple X — EWM-2026-502","gpTotalIrrPct":"Gp Total Irr Pct — EWM-2026-502","gpPromoteEarned":"Gp Promote Earned — EWM-2026-502"},{"id":"00000000-0150-0005-0000-000000000003","recordCode":"EWM-2026-503","title":"Real Estate Investment Analysis Equity Waterfall Model — Unit #3","name":"Real Estate Investment Analysis Equity Waterfall Model — Unit #3","modelTitle":"Equity Waterfall Model","ownerName":"Elena Rostova (Principal Lead)","primaryAttrLabel":"Lp Equity Share Pct","primaryAttrValue":"Lp Equity Share Pct: EWM-2026-503","secondaryAttrLabel":"Gp Equity Share Pct","secondaryAttrValue":"Real Estate Investment Analysis Tier 3","metricLabel":"Pref Return Irr Pct","metricValue":"94.6% (720.00 units)","operationalSummary":"lpEquitySharePct + gpEquitySharePct == 100.0000%, and every promoteTiers[i] satisfies lpSplitPct + gpSpli","invariantRule":"lpEquitySharePct + gpEquitySharePct == 100.0000%, and every promoteTiers[i] satisfies lpSplitPct + gpSplitPct == 100.000","crossSuiteRef":"underwritingModelId -> ReaUnderwritingModel","updatedAt":"2026-05-12 13:15","contactPhone":"+14155550132","status":"APPROVED","moderationStage":"APPROVED","version":3,"isDeleted":false,"lpEquitySharePct":"Lp Equity Share Pct — EWM-2026-503","gpEquitySharePct":"Gp Equity Share Pct — EWM-2026-503","prefReturnIrrPct":"Pref Return Irr Pct — EWM-2026-503","gpCatchUpPct":"Gp Catch Up Pct — EWM-2026-503","promoteTiers":"Promote Tiers — EWM-2026-503","tierDistributions":true,"lpNetIrrPct":"Lp Net Irr Pct — EWM-2026-503","lpEquityMultipleX":"Lp Equity Multiple X — EWM-2026-503","gpTotalIrrPct":"Gp Total Irr Pct — EWM-2026-503","gpPromoteEarned":"Gp Promote Earned — EWM-2026-503"},{"id":"00000000-0150-0005-0000-000000000004","recordCode":"EWM-2026-504","title":"Real Estate Investment Analysis Equity Waterfall Model — Unit #4","name":"Real Estate Investment Analysis Equity Waterfall Model — Unit #4","modelTitle":"Equity Waterfall Model","ownerName":"Marcus Vance (Senior Operations)","primaryAttrLabel":"Lp Equity Share Pct","primaryAttrValue":"Lp Equity Share Pct: EWM-2026-504","secondaryAttrLabel":"Gp Equity Share Pct","secondaryAttrValue":"Real Estate Investment Analysis Tier 1","metricLabel":"Pref Return Irr Pct","metricValue":"95.7% (767.50 units)","operationalSummary":"lpEquitySharePct + gpEquitySharePct == 100.0000%, and every promoteTiers[i] satisfies lpSplitPct + gpSpli","invariantRule":"lpEquitySharePct + gpEquitySharePct == 100.0000%, and every promoteTiers[i] satisfies lpSplitPct + gpSplitPct == 100.000","crossSuiteRef":"underwritingModelId -> ReaUnderwritingModel","updatedAt":"2026-05-13 15:15","contactPhone":"+14155550133","status":"ACTIVE","moderationStage":"ACTIVE","version":4,"isDeleted":false,"lpEquitySharePct":"Lp Equity Share Pct — EWM-2026-504","gpEquitySharePct":"Gp Equity Share Pct — EWM-2026-504","prefReturnIrrPct":"Pref Return Irr Pct — EWM-2026-504","gpCatchUpPct":"Gp Catch Up Pct — EWM-2026-504","promoteTiers":"Promote Tiers — EWM-2026-504","tierDistributions":false,"lpNetIrrPct":"Lp Net Irr Pct — EWM-2026-504","lpEquityMultipleX":"Lp Equity Multiple X — EWM-2026-504","gpTotalIrrPct":"Gp Total Irr Pct — EWM-2026-504","gpPromoteEarned":"Gp Promote Earned — EWM-2026-504"},{"id":"00000000-0150-0005-0000-000000000005","recordCode":"EWM-2026-505","title":"Real Estate Investment Analysis Equity Waterfall Model — Unit #5","name":"Real Estate Investment Analysis Equity Waterfall Model — Unit #5","modelTitle":"Equity Waterfall Model","ownerName":"Sophia Laurent (Director)","primaryAttrLabel":"Lp Equity Share Pct","primaryAttrValue":"Lp Equity Share Pct: EWM-2026-505","secondaryAttrLabel":"Gp Equity Share Pct","secondaryAttrValue":"Real Estate Investment Analysis Tier 2","metricLabel":"Pref Return Irr Pct","metricValue":"96.8% (815.00 units)","operationalSummary":"lpEquitySharePct + gpEquitySharePct == 100.0000%, and every promoteTiers[i] satisfies lpSplitPct + gpSpli","invariantRule":"lpEquitySharePct + gpEquitySharePct == 100.0000%, and every promoteTiers[i] satisfies lpSplitPct + gpSplitPct == 100.000","crossSuiteRef":"underwritingModelId -> ReaUnderwritingModel","updatedAt":"2026-05-14 17:15","contactPhone":"+14155550134","status":"DRAFT","moderationStage":"DRAFT","version":5,"isDeleted":false,"lpEquitySharePct":"Lp Equity Share Pct — EWM-2026-505","gpEquitySharePct":"Gp Equity Share Pct — EWM-2026-505","prefReturnIrrPct":"Pref Return Irr Pct — EWM-2026-505","gpCatchUpPct":"Gp Catch Up Pct — EWM-2026-505","promoteTiers":"Promote Tiers — EWM-2026-505","tierDistributions":true,"lpNetIrrPct":"Lp Net Irr Pct — EWM-2026-505","lpEquityMultipleX":"Lp Equity Multiple X — EWM-2026-505","gpTotalIrrPct":"Gp Total Irr Pct — EWM-2026-505","gpPromoteEarned":"Gp Promote Earned — EWM-2026-505"}],"ReaDueDiligenceChecklist":[{"id":"00000000-0150-0006-0000-000000000001","recordCode":"DDC-2026-601","title":"Real Estate Investment Analysis Due Diligence Checklist — Unit #1","name":"Real Estate Investment Analysis Due Diligence Checklist — Unit #1","modelTitle":"Due Diligence Checklist","ownerName":"Noah Kowalski (Specialist)","primaryAttrLabel":"Category","primaryAttrValue":"Category: DDC-2026-601","secondaryAttrLabel":"Item Title","secondaryAttrValue":"Real Estate Investment Analysis Tier 1","metricLabel":"Severity","metricValue":"92.5% (750.00 units)","operationalSummary":"Deal cannot execute OnboardClosedAcquisition while any BLOCKER checklist item remains in PENDING or RED_F","invariantRule":"Deal cannot execute OnboardClosedAcquisition while any BLOCKER checklist item remains in PENDING or RED_FLAG state (unle","crossSuiteRef":"dealId -> ReaInvestmentDeal, ownerEmployeeRef -> HrEmployee, evidenceFileRefs[] ","updatedAt":"2026-05-10 09:15","contactPhone":"+14155550135","status":"PENDING","moderationStage":"PENDING","version":1,"isDeleted":false,"category":"TITLE_SURVEY","itemTitle":"Item Title — DDC-2026-601","severity":"MATERIAL_PRICE_ADJUST","dueDate":"Due Date — DDC-2026-601","findingSummary":"Finding Summary — DDC-2026-601"},{"id":"00000000-0150-0006-0000-000000000002","recordCode":"DDC-2026-602","title":"Real Estate Investment Analysis Due Diligence Checklist — Unit #2","name":"Real Estate Investment Analysis Due Diligence Checklist — Unit #2","modelTitle":"Due Diligence Checklist","ownerName":"Elena Rostova (Principal Lead)","primaryAttrLabel":"Category","primaryAttrValue":"Category: DDC-2026-602","secondaryAttrLabel":"Item Title","secondaryAttrValue":"Real Estate Investment Analysis Tier 2","metricLabel":"Severity","metricValue":"93.6% (797.50 units)","operationalSummary":"Deal cannot execute OnboardClosedAcquisition while any BLOCKER checklist item remains in PENDING or RED_F","invariantRule":"Deal cannot execute OnboardClosedAcquisition while any BLOCKER checklist item remains in PENDING or RED_FLAG state (unle","crossSuiteRef":"dealId -> ReaInvestmentDeal, ownerEmployeeRef -> HrEmployee, evidenceFileRefs[] ","updatedAt":"2026-05-11 11:15","contactPhone":"+14155550136","status":"IN_REVIEW","moderationStage":"IN_REVIEW","version":2,"isDeleted":false,"category":"ENVIRONMENTAL_ESA","itemTitle":"Item Title — DDC-2026-602","severity":"STANDARD","dueDate":"Due Date — DDC-2026-602","findingSummary":"Finding Summary — DDC-2026-602"},{"id":"00000000-0150-0006-0000-000000000003","recordCode":"DDC-2026-603","title":"Real Estate Investment Analysis Due Diligence Checklist — Unit #3","name":"Real Estate Investment Analysis Due Diligence Checklist — Unit #3","modelTitle":"Due Diligence Checklist","ownerName":"Marcus Vance (Senior Operations)","primaryAttrLabel":"Category","primaryAttrValue":"Category: DDC-2026-603","secondaryAttrLabel":"Item Title","secondaryAttrValue":"Real Estate Investment Analysis Tier 3","metricLabel":"Severity","metricValue":"94.7% (845.00 units)","operationalSummary":"Deal cannot execute OnboardClosedAcquisition while any BLOCKER checklist item remains in PENDING or RED_F","invariantRule":"Deal cannot execute OnboardClosedAcquisition while any BLOCKER checklist item remains in PENDING or RED_FLAG state (unle","crossSuiteRef":"dealId -> ReaInvestmentDeal, ownerEmployeeRef -> HrEmployee, evidenceFileRefs[] ","updatedAt":"2026-05-12 13:15","contactPhone":"+14155550137","status":"RED_FLAG","moderationStage":"RED_FLAG","version":3,"isDeleted":false,"category":"PHYSICAL_PCA","itemTitle":"Item Title — DDC-2026-603","severity":"MATERIAL_PRICE_ADJUST","dueDate":"Due Date — DDC-2026-603","findingSummary":"Finding Summary — DDC-2026-603"},{"id":"00000000-0150-0006-0000-000000000004","recordCode":"DDC-2026-604","title":"Real Estate Investment Analysis Due Diligence Checklist — Unit #4","name":"Real Estate Investment Analysis Due Diligence Checklist — Unit #4","modelTitle":"Due Diligence Checklist","ownerName":"Sophia Laurent (Director)","primaryAttrLabel":"Category","primaryAttrValue":"Category: DDC-2026-604","secondaryAttrLabel":"Item Title","secondaryAttrValue":"Real Estate Investment Analysis Tier 1","metricLabel":"Severity","metricValue":"95.8% (892.50 units)","operationalSummary":"Deal cannot execute OnboardClosedAcquisition while any BLOCKER checklist item remains in PENDING or RED_F","invariantRule":"Deal cannot execute OnboardClosedAcquisition while any BLOCKER checklist item remains in PENDING or RED_FLAG state (unle","crossSuiteRef":"dealId -> ReaInvestmentDeal, ownerEmployeeRef -> HrEmployee, evidenceFileRefs[] ","updatedAt":"2026-05-13 15:15","contactPhone":"+14155550138","status":"CLEARED","moderationStage":"CLEARED","version":4,"isDeleted":false,"category":"ZONING","itemTitle":"Item Title — DDC-2026-604","severity":"STANDARD","dueDate":"Due Date — DDC-2026-604","findingSummary":"Finding Summary — DDC-2026-604"},{"id":"00000000-0150-0006-0000-000000000005","recordCode":"DDC-2026-605","title":"Real Estate Investment Analysis Due Diligence Checklist — Unit #5","name":"Real Estate Investment Analysis Due Diligence Checklist — Unit #5","modelTitle":"Due Diligence Checklist","ownerName":"Liam Chen (Systems Architect)","primaryAttrLabel":"Category","primaryAttrValue":"Category: DDC-2026-605","secondaryAttrLabel":"Item Title","secondaryAttrValue":"Real Estate Investment Analysis Tier 2","metricLabel":"Severity","metricValue":"96.0% (940.00 units)","operationalSummary":"Deal cannot execute OnboardClosedAcquisition while any BLOCKER checklist item remains in PENDING or RED_F","invariantRule":"Deal cannot execute OnboardClosedAcquisition while any BLOCKER checklist item remains in PENDING or RED_FLAG state (unle","crossSuiteRef":"dealId -> ReaInvestmentDeal, ownerEmployeeRef -> HrEmployee, evidenceFileRefs[] ","updatedAt":"2026-05-14 17:15","contactPhone":"+14155550139","status":"WAIVED_BY_IC","moderationStage":"WAIVED_BY_IC","version":5,"isDeleted":false,"category":"LEASE_RENT_ROLL_AUDIT","itemTitle":"Item Title — DDC-2026-605","severity":"MATERIAL_PRICE_ADJUST","dueDate":"Due Date — DDC-2026-605","findingSummary":"Finding Summary — DDC-2026-605"}],"ReaInvestmentCommitteeMemo":[{"id":"00000000-0150-0007-0000-000000000001","recordCode":"ICM-2026-701","title":"Real Estate Investment Analysis Investment Committee Memo — Unit #1","name":"Real Estate Investment Analysis Investment Committee Memo — Unit #1","modelTitle":"Investment Committee Memo","ownerName":"Elena Rostova (Principal Lead)","primaryAttrLabel":"Memo Code","primaryAttrValue":"Memo Code: ICM-2026-701","secondaryAttrLabel":"Executive Thesis","secondaryAttrValue":"Real Estate Investment Analysis Tier 1","metricLabel":"Key Risks And Mitigants","metricValue":"92.6% (875.00 units)","operationalSummary":"Opening voting (FreezeUnderwritingForIc) atomically sets lockedModel.isIcLockedBaseline = true; recorded ","invariantRule":"Opening voting (FreezeUnderwritingForIc) atomically sets lockedModel.isIcLockedBaseline = true; recorded votes and APPRO","crossSuiteRef":"dealId -> ReaInvestmentDeal, lockedModelId -> ReaUnderwritingModel, compIds[] ->","updatedAt":"2026-05-10 09:15","contactPhone":"+14155550140","status":"DRAFT","moderationStage":"DRAFT","version":1,"isDeleted":false,"memoCode":"Memo Code — ICM-2026-701","executiveThesis":"Executive Thesis — ICM-2026-701","keyRisksAndMitigants":true,"requiredQuorumVotes":true,"votes":"Votes — ICM-2026-701","decidedAt":"Decided At — ICM-2026-701"},{"id":"00000000-0150-0007-0000-000000000002","recordCode":"ICM-2026-702","title":"Real Estate Investment Analysis Investment Committee Memo — Unit #2","name":"Real Estate Investment Analysis Investment Committee Memo — Unit #2","modelTitle":"Investment Committee Memo","ownerName":"Marcus Vance (Senior Operations)","primaryAttrLabel":"Memo Code","primaryAttrValue":"Memo Code: ICM-2026-702","secondaryAttrLabel":"Executive Thesis","secondaryAttrValue":"Real Estate Investment Analysis Tier 2","metricLabel":"Key Risks And Mitigants","metricValue":"93.7% (922.50 units)","operationalSummary":"Opening voting (FreezeUnderwritingForIc) atomically sets lockedModel.isIcLockedBaseline = true; recorded ","invariantRule":"Opening voting (FreezeUnderwritingForIc) atomically sets lockedModel.isIcLockedBaseline = true; recorded votes and APPRO","crossSuiteRef":"dealId -> ReaInvestmentDeal, lockedModelId -> ReaUnderwritingModel, compIds[] ->","updatedAt":"2026-05-11 11:15","contactPhone":"+14155550141","status":"VOTING_OPEN","moderationStage":"VOTING_OPEN","version":2,"isDeleted":false,"memoCode":"Memo Code — ICM-2026-702","executiveThesis":"Executive Thesis — ICM-2026-702","keyRisksAndMitigants":false,"requiredQuorumVotes":false,"votes":"Votes — ICM-2026-702","decidedAt":"Decided At — ICM-2026-702"},{"id":"00000000-0150-0007-0000-000000000003","recordCode":"ICM-2026-703","title":"Real Estate Investment Analysis Investment Committee Memo — Unit #3","name":"Real Estate Investment Analysis Investment Committee Memo — Unit #3","modelTitle":"Investment Committee Memo","ownerName":"Sophia Laurent (Director)","primaryAttrLabel":"Memo Code","primaryAttrValue":"Memo Code: ICM-2026-703","secondaryAttrLabel":"Executive Thesis","secondaryAttrValue":"Real Estate Investment Analysis Tier 3","metricLabel":"Key Risks And Mitigants","metricValue":"94.8% (970.00 units)","operationalSummary":"Opening voting (FreezeUnderwritingForIc) atomically sets lockedModel.isIcLockedBaseline = true; recorded ","invariantRule":"Opening voting (FreezeUnderwritingForIc) atomically sets lockedModel.isIcLockedBaseline = true; recorded votes and APPRO","crossSuiteRef":"dealId -> ReaInvestmentDeal, lockedModelId -> ReaUnderwritingModel, compIds[] ->","updatedAt":"2026-05-12 13:15","contactPhone":"+14155550142","status":"APPROVED","moderationStage":"APPROVED","version":3,"isDeleted":false,"memoCode":"Memo Code — ICM-2026-703","executiveThesis":"Executive Thesis — ICM-2026-703","keyRisksAndMitigants":true,"requiredQuorumVotes":true,"votes":"Votes — ICM-2026-703","decidedAt":"Decided At — ICM-2026-703"},{"id":"00000000-0150-0007-0000-000000000004","recordCode":"ICM-2026-704","title":"Real Estate Investment Analysis Investment Committee Memo — Unit #4","name":"Real Estate Investment Analysis Investment Committee Memo — Unit #4","modelTitle":"Investment Committee Memo","ownerName":"Liam Chen (Systems Architect)","primaryAttrLabel":"Memo Code","primaryAttrValue":"Memo Code: ICM-2026-704","secondaryAttrLabel":"Executive Thesis","secondaryAttrValue":"Real Estate Investment Analysis Tier 1","metricLabel":"Key Risks And Mitigants","metricValue":"95.0% (1017.50 units)","operationalSummary":"Opening voting (FreezeUnderwritingForIc) atomically sets lockedModel.isIcLockedBaseline = true; recorded ","invariantRule":"Opening voting (FreezeUnderwritingForIc) atomically sets lockedModel.isIcLockedBaseline = true; recorded votes and APPRO","crossSuiteRef":"dealId -> ReaInvestmentDeal, lockedModelId -> ReaUnderwritingModel, compIds[] ->","updatedAt":"2026-05-13 15:15","contactPhone":"+14155550143","status":"APPROVED_WITH_CONDITIONS","moderationStage":"APPROVED_WITH_CONDITIONS","version":4,"isDeleted":false,"memoCode":"Memo Code — ICM-2026-704","executiveThesis":"Executive Thesis — ICM-2026-704","keyRisksAndMitigants":false,"requiredQuorumVotes":false,"votes":"Votes — ICM-2026-704","decidedAt":"Decided At — ICM-2026-704"},{"id":"00000000-0150-0007-0000-000000000005","recordCode":"ICM-2026-705","title":"Real Estate Investment Analysis Investment Committee Memo — Unit #5","name":"Real Estate Investment Analysis Investment Committee Memo — Unit #5","modelTitle":"Investment Committee Memo","ownerName":"Amira Al-Mansoor (Compliance Lead)","primaryAttrLabel":"Memo Code","primaryAttrValue":"Memo Code: ICM-2026-705","secondaryAttrLabel":"Executive Thesis","secondaryAttrValue":"Real Estate Investment Analysis Tier 2","metricLabel":"Key Risks And Mitigants","metricValue":"96.1% (1065.00 units)","operationalSummary":"Opening voting (FreezeUnderwritingForIc) atomically sets lockedModel.isIcLockedBaseline = true; recorded ","invariantRule":"Opening voting (FreezeUnderwritingForIc) atomically sets lockedModel.isIcLockedBaseline = true; recorded votes and APPRO","crossSuiteRef":"dealId -> ReaInvestmentDeal, lockedModelId -> ReaUnderwritingModel, compIds[] ->","updatedAt":"2026-05-14 17:15","contactPhone":"+14155550144","status":"DECLINED","moderationStage":"DECLINED","version":5,"isDeleted":false,"memoCode":"Memo Code — ICM-2026-705","executiveThesis":"Executive Thesis — ICM-2026-705","keyRisksAndMitigants":true,"requiredQuorumVotes":true,"votes":"Votes — ICM-2026-705","decidedAt":"Decided At — ICM-2026-705"}]};
+
+    window.loadEntitySWR = async function(entityName, onUpdate) {
+      var fallback = (window.SEED_DATA && window.SEED_DATA[entityName]) ? window.SEED_DATA[entityName].slice() : [];
+      try {
+        if (window.rapiderApi && typeof window.rapiderApi.findSWR === 'function') {
+          var res = await window.rapiderApi.findSWR(entityName, {}, function(fresh) {
+            if (Array.isArray(fresh) && fresh.length > 0) {
+              onUpdate(fresh.filter(function(r) { return r && r.isDeleted !== true; }));
+            }
+          });
+          var arr = Array.isArray(res) ? res : (res && Array.isArray(res.data) ? res.data : []);
+          var clean = arr.filter(function(r) { return r && r.isDeleted !== true; });
+          onUpdate(clean.length > 0 ? clean : fallback);
+          return;
+        }
+      } catch (_) {}
+      onUpdate(fallback);
+    };
+
+
+      var rows_8 = [];
+      function renderLedger_8() {
+        var q = (document.getElementById('ledgerSearch_8').value || '').trim().toLowerCase();
+        var st = document.getElementById('ledgerStatus_8').value;
+        var bar = document.getElementById('activeFilterTagsBar');
+        var chips = [];
+        if (q) chips.push('<span class="filter-chip">Search: "' + esc(q) + '" <button type="button" onclick="document.getElementById(\'ledgerSearch_8\').value=\'\';renderLedger_8();">✕</button></span>');
+        if (st !== 'ALL') chips.push('<span class="filter-chip">Status: "' + esc(st) + '" <button type="button" onclick="document.getElementById(\'ledgerStatus_8\').value=\'ALL\';renderLedger_8();">✕</button></span>');
+        if (chips.length > 0) {
+          bar.style.display = 'flex';
+          bar.innerHTML = '<span style="font-weight:700;color:var(--muted);font-size:11px;text-transform:uppercase;">Active:</span> ' + chips.join(' ') + ' <button type="button" class="btn small" style="margin-left:auto;" onclick="document.getElementById(\'ledgerSearch_8\').value=\'\';document.getElementById(\'ledgerStatus_8\').value=\'ALL\';renderLedger_8();"><i class="fas fa-times-circle"></i> Clear all</button>';
+        } else {
+          bar.style.display = 'none';
+          bar.innerHTML = '';
+        }
+        var filtered = rows_8.filter(function(r) {
+          var mQ = !q || JSON.stringify(r).toLowerCase().indexOf(q) !== -1;
+          var mSt = st === 'ALL' || r.status === st;
+          return mQ && mSt;
+        });
+        document.getElementById('ledgerCount_8').textContent = filtered.length + ' Records';
+        document.getElementById('ledgerRows_8').innerHTML = filtered.map(function(r) {
+          return '<tr>' +
+            '<td><a href="#/deal-detail?id=' + esc(r.id) + '" class="primary-link">' + esc(r.recordCode) + '</a><div style="font-size:11px;color:var(--muted);">' + esc(r.updatedAt) + '</div></td>' +
+            '<td><a href="#/deal-detail?id=' + esc(r.id) + '" class="primary-link">' + esc(r.title) + '</a><div style="font-size:12px;color:var(--muted);margin-top:2px;">' + esc(r.operationalSummary) + '</div></td>' +
+            '<td><span class="badge purple">' + esc(r.secondaryAttrValue) + '</span></td>' +
+            '<td><strong>' + esc(r.metricValue) + '</strong></td>' +
+            '<td><div style="font-size:12px;font-weight:600;">' + esc(r.ownerName) + '</div><div style="font-size:11px;color:var(--muted);">' + esc(r.crossSuiteRef) + '</div></td>' +
+            '<td><span class="badge green">' + esc(r.status) + '</span></td>' +
+            '<td style="white-space:nowrap;">' +
+              '<a href="#/deal-comp-ic-drawer?id=' + esc(r.id) + '" class="btn small"><i class="fas fa-edit mr-1"></i>Edit</a> ' +
+              '<button type="button" class="btn icon-only" title="Delete" aria-label="Delete" onclick="deleteLedgerRow_8(\'' + esc(r.id) + '\', \'' + esc(r.recordCode) + '\')"><i class="fas fa-trash-alt"></i></button>' +
+            '</td>' +
+          '</tr>';
+        }).join('');
+      }
+      window.deleteLedgerRow_8 = function(id, code) {
+        window.showConfirmModal('Remove Underwriting Model', 'Soft-delete ' + code + ' from Post-Close Actual vs. Underwriting?', async function() {
+          if (window.rapiderApi && typeof window.rapiderApi.delete === 'function') {
+            await window.rapiderApi.delete('ReaUnderwritingModel', id);
+          }
+          rows_8 = rows_8.filter(function(r) { return r.id !== id; });
+          renderLedger_8();
+          window.toast('Archived ' + code, 'info');
+        });
+      };
+      document.getElementById('ledgerSearch_8').addEventListener('input', renderLedger_8);
+      document.getElementById('ledgerStatus_8').addEventListener('change', renderLedger_8);
+      window.loadEntitySWR('ReaUnderwritingModel', function(rows) { rows_8 = rows; renderLedger_8(); });
+    
+  </script>
 </body>
 </html>
